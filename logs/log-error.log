@@ -1,1 +1,9 @@
 {"level":"error","message":"Sensor já cadastrado! - /api/sensors - ::1 "}
+{"level":"error","message":"Unexpected token '\"', \"\"nome\": \"L\"... is not valid JSON - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"Unexpected token '\"', \"\"nome\": \"L\"... is not valid JSON - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"Unexpected token '\"', \"\"nome\": \"L\"... is not valid JSON - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"Unexpected token '\"', \"\"nome\": \"L\"... is not valid JSON - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"Unexpected token '\"', \"\"nome\": \"L\"... is not valid JSON - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"duplicate key value violates unique constraint \"UQ_9e15d9e23dcc62d65a2349226fd\" - /api/pesquisadores/ - ::1 "}
+{"level":"error","message":"Este pesquisador não existe - /api/pesquisadores/lucas@email.com - ::1 "}
+{"level":"error","message":"Este pesquisador não existe - /api/pesquisadores/lucas@gmail.com - ::1 "}
