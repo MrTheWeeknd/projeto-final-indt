@@ -41,6 +41,6 @@ export default class PesquisadorController {
     public async deletePesquisador(req: Request, res: Response) {
             const { email } = req.params;
             await this.pesquisadorService.deletePesquisador(email as string);
-            res.status(204).json({ status: "Pesquisador deletado" })
+            res.status(204).json({ message: "Pesquisador deletado" })
     }
 }

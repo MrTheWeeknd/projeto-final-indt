@@ -11,6 +11,8 @@ import compression from "compression";
 
 import errorHandler from "./middleware/errorHandler.js";
 import pesquisadorRouter from "./routes/pesquisadorRoutes.js";
+import areaRouter from "./routes/areaRoutes.js";
+import leituraRouter from "./routes/leituraRoutes.js";
 
 dotenv.config();
 
@@ -38,6 +40,8 @@ app.use(compression({ threshold: 1024 }))
 
 app.use('/api', sensorRouter);
 app.use('/api', pesquisadorRouter)
+app.use('/api', areaRouter)
+app.use('/api', leituraRouter)
 
 app.use(errorHandler)
 

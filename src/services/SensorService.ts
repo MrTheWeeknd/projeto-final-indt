@@ -15,24 +15,29 @@ class SensorService {
     }
 
 
-    // Criar uma função que recupera um sensor pelo seu ID
+    public async getByIdSensor(id: string): Promise<Sensor> {
+        const sensor = await this.sensorRepository.findOne({where: { id } })
+
+        if(!sensor){
+            throw new Error("Este sensor não existe")
+        }
+        
+        return sensor;
+    }
+
 
     public async addSensor(body: unknown): Promise<Sensor> {
 
-        const {  nome, serialNumber } = body as Sensor;
+        const { serialNumber, fabricante, modelo, tipo, status, ipFixo, dataInstalacao, dataManutencao, cicloLeitura, latitude, longitude, finalidade } = body as any;
 
-        // validations 
-        if(!nome || !serialNumber) {
-            throw new Error("Missing required sensor fields");
-        }
         const sensorExiste = await this.sensorRepository.findOne({ where: { serialNumber } })
+
         if(sensorExiste) {
             throw new AppError(400, "Sensor já cadastrado!");
         }
-        const novoSensor = await this.sensorRepository.create({
-            nome,
-            serialNumber
-        })
+
+        const novoSensor = await this.sensorRepository.create({ serialNumber, fabricante, modelo, tipo, status, ipFixo, dataInstalacao, dataManutencao, cicloLeitura, latitude, longitude, finalidade})
+        
         await this.sensorRepository.save(novoSensor);
         return novoSensor;
     }

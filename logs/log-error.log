@@ -7,3 +7,20 @@
 {"level":"error","message":"duplicate key value violates unique constraint \"UQ_9e15d9e23dcc62d65a2349226fd\" - /api/pesquisadores/ - ::1 "}
 {"level":"error","message":"Este pesquisador não existe - /api/pesquisadores/lucas@email.com - ::1 "}
 {"level":"error","message":"Este pesquisador não existe - /api/pesquisadores/lucas@gmail.com - ::1 "}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 75 (line 4 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 75 (line 4 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 75 (line 4 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 75 (line 4 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected ',' or '}' after property value in JSON at position 75 (line 4 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 219 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 227 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 227 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 227 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 195 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 195 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 195 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"Expected double-quoted property name in JSON at position 216 (line 10 column 1) - /api/areas - ::1 "}
+{"level":"error","message":"null value in column \"latitude\" of relation \"area\" violates not-null constraint - /api/areas - ::1 "}
+{"level":"error","message":"Área já cadastrada! - /api/areas - ::1 "}
+{"level":"error","message":"Este leitura não existe - /api/leituras/6d1b78bc-85b9-4e72-bd00-3c09d50cda53 - ::1 "}
+{"level":"error","message":"Este sensor não existe - /api/sensors/87e0b2e2-a919-41dd-97a8-cf1e888f194e - ::1 "}

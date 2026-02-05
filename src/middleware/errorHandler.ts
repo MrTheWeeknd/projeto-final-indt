@@ -10,6 +10,7 @@ const logger = winston.createLogger({
 
 const errorHandler: ErrorRequestHandler = ( err: Error, req: Request, res: Response, next: NextFunction) => {
     logger.error(`${err.message} - ${req.path} - ${req.ip} `);
+    console.log(err)
 
     if(err instanceof AppError) {
         res.status(err.statusCode).json({

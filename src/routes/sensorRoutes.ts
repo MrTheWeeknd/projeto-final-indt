@@ -11,8 +11,9 @@ const sensorController = new SensorController(sensorService)
 // localhost:6060/api/sensors
 
 sensorRouter.get('/sensors', (req, res) => sensorController.getAllSensors(req, res));
+sensorRouter.get('/sensors/:id', (req, res) => sensorController.getByIdSensor(req, res)); 
 sensorRouter.post('/sensors', validarBody(createSensorSchema)  ,(req, res) => sensorController.addSensor(req, res));
-//sensorRouter.put('/sensors/:id', (req, res) => sensorController.updateSensor(req, res));
-//sensorRouter.delete('/sensors/:id', (req, res) => sensorController.deleteSensor(req, res));
+sensorRouter.put('/sensors/:id', (req, res) => sensorController.updateSensor(req, res));
+sensorRouter.delete('/sensors/:id', (req, res) => sensorController.deleteSensor(req, res));
 
 export default sensorRouter;
