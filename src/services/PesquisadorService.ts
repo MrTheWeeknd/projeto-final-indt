@@ -1,7 +1,7 @@
 import { read, write } from '../utils/pesquisadorFile.js';
 import { AppError } from '../errors/AppError.js';
 import { appDataSource } from '../database/appDataSource.js';
-import  { Pesquisador } from '../entities/Pesquisador.js';
+import  { Pesquisador } from '../entities/Movimentacao.js';
 
 
 class PesquisadorService {

@@ -1,7 +1,7 @@
 import { read, write } from '../utils/areaFile.js';
 import { AppError } from '../errors/AppError.js';
 import { appDataSource } from '../database/appDataSource.js';
-import  { Area } from '../entities/Area.js';
+import  { Area } from '../entities/Categoria.js';
 
 
 class AreaService {

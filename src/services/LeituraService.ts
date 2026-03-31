@@ -1,7 +1,7 @@
 import { read, write } from '../utils/leituraFile.js';
 import { AppError } from '../errors/AppError.js';
 import { appDataSource } from '../database/appDataSource.js';
-import  { Leitura } from '../entities/Leitura.js';
+import  { Leitura } from '../entities/Insumo.js';
 
 
 class LeituraService {

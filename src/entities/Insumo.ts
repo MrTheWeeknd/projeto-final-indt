@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import { Categoria } from "./Categoria.js"; 
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Categoria } from "./Categoria.js";
+import { Movimentacao } from "./Movimentacao.js";
 
 @Entity("insumo")
 export class Insumo {
@@ -16,25 +17,28 @@ export class Insumo {
     @Column({ type: "text", nullable: true })
     descricao?: string;
 
-    @ManyToOne(() => Categoria)
+    @ManyToOne(() => Categoria, (categoria) => categoria.insumos, { nullable: false, eager: true })
     @JoinColumn({ name: "categoria_id" })
     categoria: Categoria;
 
-    @Column({ type: "varchar", nullable: false })
-    unidade_medida: string;
+    @Column({ name: "unidade_medida", type: "varchar", nullable: false })
+    unidadeMedida: string;
 
-    @Column({ type: "numeric", default: 0 })
-    estoque_atual: number;
+    @Column({ name: "estoque_atual", type: "float", default: 0 })
+    estoqueAtual: number;
 
-    @Column({ type: "numeric", nullable: false })
-    estoque_minimo: number;
+    @Column({ name: "estoque_minimo", type: "float", nullable: false })
+    estoqueMinimo: number;
 
-    @Column({ type: "numeric", nullable: true })
-    estoque_maximo?: number;
+    @Column({ name: "estoque_maximo", type: "float", nullable: true })
+    estoqueMaximo?: number;
 
     @Column({ type: "varchar", nullable: true })
     localizacao?: string;
 
     @Column({ type: "boolean", default: true })
     ativo: boolean;
+
+    @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.insumo)
+    movimentacoes: Movimentacao[];
 }

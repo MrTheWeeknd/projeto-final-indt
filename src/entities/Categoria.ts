@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Insumo } from "./Insumo.js";
 
 @Entity("categoria")
 export class Categoria {
@@ -11,4 +12,7 @@ export class Categoria {
 
     @Column({ type: "text", nullable: true })
     descricao?: string;
+
+    @OneToMany(() => Insumo, (insumo) => insumo.categoria)
+    insumos: Insumo[];
 }
