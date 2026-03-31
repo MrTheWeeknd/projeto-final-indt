@@ -59,7 +59,7 @@ A API estará diponível em: `http://localhost:6060/api`
 
 ### 3. Testes Automatizados (Cypress)
 
-Você poderá ver o funcionamento da API mandando requisições através do Postman, Yaak, mas a princípio deixamos todas as rotas atuais com testes automatizados através do cypress, você pode rodar tanto pela `GUI` (Interface Gráfica) ou pelo `CLI` (Terminal)
+Você poderá ver o funcionamento da API mandando requisições através do Yaak, mas a princípio deixamos todas as rotas atuais com testes automatizados através do cypress, você pode rodar tanto pela `GUI` (Interface Gráfica) ou pelo `CLI` (Terminal)
 
 Execuntando pelo `GUI`
 
@@ -78,6 +78,12 @@ Executando pelo `CLI`
 npx cypress run
 ```
 
+
+Para o desenvolvimento cotidiano e testes rápidos de rotas individuais, o projeto inclui uma coleção de requisições do **Yaak**.
+- **O que valida:** Requisições isoladas para cada endpoint (`GET`, `POST`, `PUT`, `DELETE`).
+- **Vantagem:** Permite testar cenários específicos manualmente (ex: validar mensagens de erro de validação do Zod) sem a necessidade de rodar um script completo.
+- **Arquivo de Importação:** Localizado em `./yaak_export.json`.
+
 ### 4. Estrutura de Pastas
 
 ```Pastas
@@ -91,6 +97,7 @@ npx cypress run
 └── package.json          # Dependências
 ├── tsconfig.json         # Configuração TypeScript
 └── readme.md             # Apresentação do projeto
+└── yaak_export.json      # Para testes Exploratórios
 ```
 
 
