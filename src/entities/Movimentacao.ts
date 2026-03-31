@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"; // <-- Importe o Relation
 import { Insumo } from "./Insumo.js";
+import { Usuario } from "./Usuario.js";
+import { motivosMovimentacao, tiposMovimentacao } from "../types/Estoque.js";
 
 @Entity("movimentacao")
 export class Movimentacao {
@@ -7,31 +9,32 @@ export class Movimentacao {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Insumo)
+    @ManyToOne(() => Insumo, (insumo) => insumo.movimentacoes, { nullable: false, eager: true })
     @JoinColumn({ name: "insumo_id" })
-    insumo: Insumo;
+    insumo: Relation<Insumo>;
 
-    @Column({ type: "enum", enum: ['entrada', 'saida'], nullable: false })
-    tipo: string;
+    @Column({ type: "enum", enum: tiposMovimentacao, nullable: false })
+    tipo: (typeof tiposMovimentacao)[number];
 
-    @Column({ type: "enum", enum: ['compra', 'devolucao', 'consumo', 'perda', 'ajuste'], nullable: false })
-    motivo: string;
+    @Column({ type: "enum", enum: motivosMovimentacao, nullable: false })
+    motivo: (typeof motivosMovimentacao)[number];
 
-    @Column({ type: "numeric", nullable: false })
+    @Column({ type: "float", nullable: false })
     quantidade: number;
 
-    @Column({ type: "numeric", nullable: false })
-    saldo_apos: number;
+    @Column({ name: "saldo_apos", type: "float", nullable: false })
+    saldoApos: number;
 
-    @Column({ type: "varchar", nullable: true })
-    linha_destino?: string;
+    @Column({ name: "linha_destino", type: "varchar", nullable: true })
+    linhaDestino?: string;
 
     @Column({ type: "text", nullable: true })
     observacao?: string;
 
-    @Column({ type: "int", nullable: false }) 
-    registrado_por: number;
+    @ManyToOne(() => Usuario, (usuario) => usuario.movimentacoes, { nullable: false, eager: true })
+    @JoinColumn({ name: "usuario_id" })
+    usuario: Relation<Usuario>;
 
     @CreateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
-    timestamp: Date;
+    dataHora: Date;
 }
