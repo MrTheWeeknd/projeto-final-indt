@@ -10,7 +10,6 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# STAGE 2 -  PRODUCTION
 FROM node:20-alpine AS production
 
 WORKDIR /app 
