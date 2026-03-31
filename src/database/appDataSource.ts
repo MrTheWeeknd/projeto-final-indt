@@ -11,7 +11,7 @@ export const appDataSource = new DataSource({
     port: Number(process.env.DB_PORT ?? 5432),
     username: process.env.DB_USERNAME ?? "postgres",
     password: process.env.DB_PASSWORD ?? "123",
-    database: process.env.DB_NAME ?? "reservaIot2",
+    database: process.env.DB_NAME ?? "localhost",
     entities: [Categoria, Insumo, Movimentacao, Usuario],
     logging: false,
     synchronize: true,
