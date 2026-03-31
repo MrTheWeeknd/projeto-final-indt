@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"; // <-- Importe o Relation
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm";
 import { Insumo } from "./Insumo.js";
 import { Usuario } from "./Usuario.js";
 import { motivosMovimentacao, tiposMovimentacao } from "../types/Estoque.js";
