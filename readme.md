@@ -1,114 +1,128 @@
-Sistema de Gestão de Stock e IoT (API)
+# Sistema de Gestão de Stock e IoT (API)
 
-Este projeto é uma API REST desenvolvida em Node.js com TypeScript, utilizando TypeORM para persistência de dados num banco PostgreSQL via Docker. O projeto também conta com testes de integração automatizados utilizando Cypress.
+Este projeto é uma API REST desenvolvida em **Node.js** com **TypeScript**, utilizando **TypeORM** para persistência de dados num banco **PostgreSQL** via **Docker**. O projeto também conta com testes de integração automatizados utilizando **Cypress**, o projeto foi desenvolvido como atividade final do curso de desenvolvimento FullStack para o INDT.
 
-🚀 Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 
-Backend: Node.js, Express, TypeScript
+* **Backend:** Node.js, Express, TypeScript
+* **Base de Dados:** PostgreSQL (via Docker)
+* **ORM:** TypeORM
+* **Validação:** Zod
+* **Testes:** Cypress
+* **Infraestrutura:** Docker & Docker Compose
 
-Base de Dados: PostgreSQL (via Docker)
+---
 
-ORM: TypeORM
+## 🛠️ Como Executar o Projeto
 
-Validação: Zod
-
-Testes: Cypress
-
-Infraestrutura: Docker & Docker Compose
-
-🛠️ Como Executar o Projeto
-
-1. Pré-requisitos
+### 1. Pré-requisitos
 
 Certifique-se de ter instalado na sua máquina:
+* [Docker](https://www.docker.com/)
+* [Node.js](https://nodejs.org/) (v18 ou superior recomendada)
 
-Docker
+### 2. Configuração do Ambiente
 
-Node.js (recomendado v18+)
+Crie um ficheiro `.env` na raiz do projeto com as seguintes variáveis:
 
-2. Configuração do Ambiente
-
-Crie um ficheiro .env na raiz do projeto com as seguintes variáveis (ajuste conforme necessário):
-
+```env
+JWT_ACCESS_SECRET="CHAVE SECRETA ACCESS"
+JWT_ACCESS_EXPIRATION="15m"
+JWT_REFRESH_SECRET="CHAVE SECRETA REFRESH"
+JWT_REFRESH_EXPIRATION="7d"
 PORT=6060
-DB_HOST=postgres-db
+NODE_ENV="development"
+DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASS=suasenha
-DB_NAME=reservaIot2
+DB_PASS=123
+DB_NAME=localhost
+```
+No código já está fornecido o `.env.example`, então você pode rodar o seguinte comando:
+```env.example
+cp .env.example .env
+```
 
+Após copiar o arquivo do example, você terá que criar sua própria chave JWT, você pode rodar os seguintes comandos para a obtenção das chaves para o `JWT_ACCESS_SECRET` e `JWT_REFRESH_SECRET` (Rode duas vezes para gerar duas chaves diferentes):
 
-3. Subir os Contentores (Docker)
+```
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
-Para iniciar a API e a Base de Dados, execute:
-
+Após esses passos você poderá finalmente rodar o docker para gerar os containers que rodarão a aplicação:
+```
 docker compose up --build
+```
+
+A API estará diponível em: `http://localhost:6060/api`
 
 
-A API estará disponível em: http://localhost:6060/api
-Pode verificar a saúde da API em: http://localhost:6060/api/health
+### 3. Testes Automatizados (Cypress)
 
-🧪 Testes Automatizados (Cypress)
+Você poderá ver o funcionamento da API mandando requisições através do Postman, Yaak, mas a princípio deixamos todas as rotas atuais com testes automatizados através do cypress, você pode rodar tanto pela `GUI` (Interface Gráfica) ou pelo `CLI` (Terminal)
 
-Os testes foram configurados para validar o fluxo completo das entidades (Categorias, Usuários, Insumos e Movimentações).
+Execuntando pelo `GUI`
 
-Executar via Interface Gráfica (Recomendado)
-
+```GUI
 npx cypress open
+```
 
 
-Selecione E2E Testing -> Escolha o Browser -> Clique no ficheiro de teste (ex: fluxo_estoque.api.cy.ts).
+1. Selecione **E2E Testing**.
+2. Escolha o Browser.
+3. Clique no ficheiro de teste.
 
-Executar via Terminal (Modo Headless)
+Executando pelo `CLI`
 
+```
 npx cypress run
+```
 
+### 4. Estrutura de Pastas
 
-📂 Estrutura de Pastas
-
+```Pastas
 .
-├── src/                  # Código fonte da API
-│   ├── entities/         # Definição das tabelas do banco de dados
-│   ├── routes/           # Definição das rotas (prefixo /api)
-│   ├── controllers/      # Lógica de receção de pedidos
-│   ├── services/         # Lógica de negócio
-│   └── database/         # Configuração do DataSource
 ├── cypress/              # Testes automatizados
-│   └── e2e/              # Ficheiros de teste (.cy.ts)
-├── docker-compose.yml    # Orquestração dos serviços
-├── cypress.config.ts     # Configuração global do Cypress
-├── tsconfig.json         # Configuração do TypeScript (ajustada para ignorar testes no build)
-└── package.json          # Dependências e scripts
+├── src/                  # Código fonte da API
+├── .env.example          # Variáveis de Ambiente
+├── cypress.config.ts     # Configuração Cypress
+├── docker-compose.yml    # Orquestração Docker
+├── Dockerfile            # Configuração Docker
+└── package.json          # Dependências
+├── tsconfig.json         # Configuração TypeScript
+└── readme.md             # Apresentação do projeto
+```
 
 
-🖥️ Acesso à Base de Dados (Útil)
+### 5. Acesso à Base de Dados (PSQL)
 
-Para verificar os dados inseridos pelos testes diretamente no PostgreSQL:
+Para verificar os dados inseridos pelo Cypress diretamento no Postgres:
 
-Entrar no contentor:
-
+1. Entrar no container:
+   
+```container
 docker exec -it postgres-db psql -U postgres
+```
+
+2. Conectar ao banco:
+
+```
+\c localhost
+```
+
+3. Colsulta rápidas:
+
+Listar tabelas: `\dt`
+Ver tabelas: `SELECT * FROM tabela`
+Sair: `\q`
 
 
-Conectar ao banco correto:
+### 6. Ao finalizar os testes rode para finalizar o container
 
-\c reservaIot2
+```
+docker compose down
+```
 
-
-Comandos rápidos:
-
-Listar tabelas: \dt
-
-Ver categorias: SELECT * FROM categoria;
-
-Ver stock atual: SELECT nome, estoque_atual FROM insumo;
-
-Sair: \q
-
-⚠️ Observações Importantes
-
-Build do TypeScript: O ficheiro tsconfig.json foi configurado com exclude: ["cypress"] para evitar erros de compilação durante o npm run build no Docker.
-
-Prefixos de Rota: Todas as rotas da API devem ser acedidas via /api (ex: /api/categorias).
-
-Nomes Únicos: Os testes utilizam Date.now() para gerar nomes e emails únicos, permitindo que os testes sejam executados várias vezes sem conflitos de integridade no banco.
+```
+docker compose down -v
+```
