@@ -1,4 +1,4 @@
-# Sistema de Gestão de Stock e IoT (API)
+# Sistema de Gestão de Estoque de Insumos
 
 Este projeto é uma API REST desenvolvida em **Node.js** com **TypeScript**, utilizando **TypeORM** para persistência de dados num banco **PostgreSQL** via **Docker**. O projeto também conta com testes de integração automatizados utilizando **Cypress**, o projeto foi desenvolvido como atividade final do curso de desenvolvimento FullStack para o INDT.
 
