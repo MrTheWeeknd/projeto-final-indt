@@ -1,0 +1,585 @@
+{
+  "yaakVersion": "2026.2.0",
+  "yaakSchema": 4,
+  "timestamp": "2026-03-31T18:30:04.463921671",
+  "resources": {
+    "workspaces": [
+      {
+        "model": "workspace",
+        "id": "wk_C4Gqc4Hw8x",
+        "createdAt": "2026-03-31T17:55:43.310615723",
+        "updatedAt": "2026-03-31T18:04:11.301801044",
+        "authentication": {},
+        "authenticationType": null,
+        "description": "{\n  \"base_url\": \"http://localhost:6060/api\"\n}",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "CiKB8e2Num"
+          }
+        ],
+        "name": "gestao_estoque",
+        "encryptionKeyChallenge": null,
+        "settingValidateCertificates": true,
+        "settingFollowRedirects": true,
+        "settingRequestTimeout": 0,
+        "settingDnsOverrides": []
+      }
+    ],
+    "environments": [
+      {
+        "model": "environment",
+        "id": "ev_qRwmTKvabr",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "createdAt": "2026-03-31T17:55:43.451603764",
+        "updatedAt": "2026-03-31T18:07:28.782833866",
+        "name": "Global Variables",
+        "public": false,
+        "base": true,
+        "parentModel": "workspace",
+        "parentId": null,
+        "variables": [
+          {
+            "enabled": true,
+            "name": "base_url",
+            "value": "http://localhost:6060/api",
+            "id": "qWSyZSdgd9"
+          }
+        ],
+        "color": null,
+        "sortPriority": 0.0
+      }
+    ],
+    "folders": [
+      {
+        "model": "folder",
+        "id": "fl_XsP7PKucBP",
+        "createdAt": "2026-03-31T18:22:30.897416746",
+        "updatedAt": "2026-03-31T18:22:30.897417490",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "description": "",
+        "headers": [],
+        "name": "MOVIMENTAÇÃO",
+        "sortPriority": -1774981350896.0
+      },
+      {
+        "model": "folder",
+        "id": "fl_dBAHVQDBdg",
+        "createdAt": "2026-03-31T18:16:44.274201320",
+        "updatedAt": "2026-03-31T18:16:44.274202130",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "description": "",
+        "headers": [],
+        "name": "INSUMOS",
+        "sortPriority": -1774981004273.0
+      },
+      {
+        "model": "folder",
+        "id": "fl_Ym2LteckAH",
+        "createdAt": "2026-03-31T18:11:55.113274012",
+        "updatedAt": "2026-03-31T18:11:55.113274806",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "description": "",
+        "headers": [],
+        "name": "USUÁRIOS",
+        "sortPriority": -1774980715112.0
+      },
+      {
+        "model": "folder",
+        "id": "fl_Uu5JT5mZ9g",
+        "createdAt": "2026-03-31T17:58:37.474590621",
+        "updatedAt": "2026-03-31T18:10:07.202730856",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": null,
+        "authentication": {},
+        "authenticationType": null,
+        "description": "",
+        "headers": [],
+        "name": "CATEGORIAS",
+        "sortPriority": -1774979917474.0
+      }
+    ],
+    "httpRequests": [
+      {
+        "model": "http_request",
+        "id": "rq_TDzpzBXVt9",
+        "createdAt": "2026-03-31T18:23:58.432420675",
+        "updatedAt": "2026-03-31T18:27:23.926167023",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_XsP7PKucBP",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"insumoId\": 1,\n  \"usuarioId\": 2,\n  \"tipo\": \"saida\",\n  \"motivo\": \"compra\",\n  \"quantidade\": 1,\n  \"observacao\": \"Entrega de carga\",\n  \"linhaDestino\": \"Entrega ao Cliente\" \n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "p2tDaryeFt"
+          }
+        ],
+        "method": "PUT",
+        "name": "Alterar Movimentações",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/movimentacoes/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "2",
+            "id": "FuxDQdC4gK"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "aPb7A0MIAi"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_HoCqbe2yHC",
+        "createdAt": "2026-03-31T18:23:47.632210282",
+        "updatedAt": "2026-03-31T18:26:41.454275730",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_XsP7PKucBP",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "DELETE",
+        "name": "Deletar Movimentações",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/movimentacoes/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "1",
+            "id": "asKdMnMpt0"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "UREIMNs06Q"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_ingfRh8wRH",
+        "createdAt": "2026-03-31T18:23:03.856076222",
+        "updatedAt": "2026-03-31T18:27:13.213391922",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_XsP7PKucBP",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"insumoId\": 1,\n  \"usuarioId\": 2,\n  \"tipo\": \"entrada\",\n  \"motivo\": \"compra\",\n  \"quantidade\": 25,\n  \"observacao\": \"Recebimento de carga\",\n  \"linhaDestino\": \"Almoxarifado Central\" \n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "EEccVpFpwT"
+          }
+        ],
+        "method": "POST",
+        "name": "Criar Movimentações",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/movimentacoes",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_3h2rqtRv7t",
+        "createdAt": "2026-03-31T18:22:33.999922441",
+        "updatedAt": "2026-03-31T18:22:56.547795407",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_XsP7PKucBP",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "GET",
+        "name": "Listar Movimentações",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/movimentacoes",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_KfJW7QA4gs",
+        "createdAt": "2026-03-31T18:21:36.719931586",
+        "updatedAt": "2026-03-31T18:21:55.769324358",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_dBAHVQDBdg",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "DELETE",
+        "name": "Deletar Insumos",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/insumos/:id",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_mBkLaq6Z9h",
+        "createdAt": "2026-03-31T18:19:51.432587618",
+        "updatedAt": "2026-03-31T18:21:05.579287549",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_dBAHVQDBdg",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"codigo\": \"RES-002\",\n  \"nome\": \"Cola Industrial\",\n  \"categoriaId\": 2,\n  \"unidadeMedida\": \"L\",\n  \"estoqueAtual\": 10,\n  \"estoqueMinimo\": 2,\n  \"estoqueMaximo\": 50,\n  \"descricao\": \"Cola de alta resistência para metal\",\n  \"localizacao\": \"Prateleira B-05\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "CcTJx8WbAB"
+          }
+        ],
+        "method": "PUT",
+        "name": "Alterar Insumos",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/insumos/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "1",
+            "id": "G70pdWZPIi"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "R42hpFMDtG"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_FWGVZFPksV",
+        "createdAt": "2026-03-31T18:18:22.656763766",
+        "updatedAt": "2026-03-31T18:19:12.878336895",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_dBAHVQDBdg",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"codigo\": \"RES-001\",\n  \"nome\": \"Resina Epóxi\",\n  \"categoriaId\": 2, \n  \"unidadeMedida\": \"KG\",\n  \"estoqueMinimo\": 5,\n  \"estoqueAtual\": 0\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "KPqkpuQSVx"
+          }
+        ],
+        "method": "POST",
+        "name": "Criar Insumos",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/insumos",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_dJMnk6f3zC",
+        "createdAt": "2026-03-31T18:18:03.256631537",
+        "updatedAt": "2026-03-31T18:18:19.554037012",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_dBAHVQDBdg",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "GET",
+        "name": "Listar Insumos",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/insumos",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_jSPPWBaVEy",
+        "createdAt": "2026-03-31T18:13:01.532646384",
+        "updatedAt": "2026-03-31T18:16:30.886896788",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Ym2LteckAH",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "DELETE",
+        "name": "Deletar Usuários",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/usuarios/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "1",
+            "id": "RmC02Uu4Gc"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "Cei9apGTjr"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_VYPrfAoNMP",
+        "createdAt": "2026-03-31T18:12:56.420730765",
+        "updatedAt": "2026-03-31T18:16:10.167243096",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Ym2LteckAH",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"email\": \"logistica@empresa.com\",\n  \"senha\": \"senha_segura_123\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "C4ZPXpSdIT"
+          }
+        ],
+        "method": "PUT",
+        "name": "Alterar Usuários",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/usuarios/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "1",
+            "id": "aYTCsHTDqG"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "XxvpmBqjXG"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_dEpLaZt7U3",
+        "createdAt": "2026-03-31T18:12:25.109380954",
+        "updatedAt": "2026-03-31T18:14:55.734604868",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Ym2LteckAH",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"email\": \"almoxarife@empresa.com\",\n  \"senha\": \"senha_segura_123\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "5uebgj76x3"
+          }
+        ],
+        "method": "POST",
+        "name": "Criar Usuários",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/usuarios",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_gX9AGtjXh5",
+        "createdAt": "2026-03-31T18:11:58.422009632",
+        "updatedAt": "2026-03-31T18:12:32.334778807",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Ym2LteckAH",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "GET",
+        "name": "Listar Usuários",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/usuarios",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_9x2oQjTysr",
+        "createdAt": "2026-03-31T18:09:44.801934510",
+        "updatedAt": "2026-03-31T18:11:35.475720433",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Uu5JT5mZ9g",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"nome\": \"Ferramentas Manuais\",\n  \"descricao\": \"Chaves\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "xW5WCm7Ncd"
+          }
+        ],
+        "method": "PUT",
+        "name": "Alterar Categorias",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/categorias/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "2",
+            "id": "AfFKzfSMKv"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "NgECHYFTR8"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_yaWkMU8ekE",
+        "createdAt": "2026-03-31T18:09:39.122221158",
+        "updatedAt": "2026-03-31T18:11:03.040915274",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Uu5JT5mZ9g",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "DELETE",
+        "name": "Deletar Categorias",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/categorias/:id",
+        "urlParameters": [
+          {
+            "enabled": true,
+            "name": ":id",
+            "value": "1",
+            "id": "TKTEkQmjdu"
+          },
+          {
+            "enabled": true,
+            "name": "",
+            "value": "",
+            "id": "8NXGhTUAxt"
+          }
+        ]
+      },
+      {
+        "model": "http_request",
+        "id": "rq_heA2znUok5",
+        "createdAt": "2026-03-31T18:09:19.251257665",
+        "updatedAt": "2026-03-31T18:09:57.882531496",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Uu5JT5mZ9g",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {},
+        "bodyType": null,
+        "description": "",
+        "headers": [],
+        "method": "GET",
+        "name": "Listar Categorias",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/categorias",
+        "urlParameters": []
+      },
+      {
+        "model": "http_request",
+        "id": "rq_2bqpG379sJ",
+        "createdAt": "2026-03-31T18:05:00.841282924",
+        "updatedAt": "2026-03-31T18:10:01.594899398",
+        "workspaceId": "wk_C4Gqc4Hw8x",
+        "folderId": "fl_Uu5JT5mZ9g",
+        "authentication": {},
+        "authenticationType": null,
+        "body": {
+          "text": "{\n  \"nome\": \"Ferramentas Manuais\",\n  \"descricao\": \"Chaves, alicates e martelos\"\n}"
+        },
+        "bodyType": "application/json",
+        "description": "",
+        "headers": [
+          {
+            "enabled": true,
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "yWztKvtfAf"
+          }
+        ],
+        "method": "POST",
+        "name": "Criar Categorias",
+        "sortPriority": -1774980300840.0,
+        "url": "${[ base_url ]}/categorias",
+        "urlParameters": []
+      }
+    ],
+    "grpcRequests": [],
+    "websocketRequests": []
+  }
+}
