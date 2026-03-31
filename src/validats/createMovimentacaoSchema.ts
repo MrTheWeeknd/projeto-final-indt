@@ -10,3 +10,5 @@ export const createMovimentacaoSchema = z.object({
     linhaDestino: z.string().trim().max(120, "Linha de destino muito longa").optional(),
     observacao: z.string().trim().max(255, "Observacao muito longa").optional(),
 });
+
+export const updateMovimentacaoSchema = createMovimentacaoSchema.partial();

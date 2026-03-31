@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, type Relation } from "typeorm"; // <-- Importe o Relation
 import { Insumo } from "./Insumo.js";
 import { Usuario } from "./Usuario.js";
 import { motivosMovimentacao, tiposMovimentacao } from "../types/Estoque.js";
@@ -11,7 +11,7 @@ export class Movimentacao {
 
     @ManyToOne(() => Insumo, (insumo) => insumo.movimentacoes, { nullable: false, eager: true })
     @JoinColumn({ name: "insumo_id" })
-    insumo: Insumo;
+    insumo: Relation<Insumo>;
 
     @Column({ type: "enum", enum: tiposMovimentacao, nullable: false })
     tipo: (typeof tiposMovimentacao)[number];
@@ -33,7 +33,7 @@ export class Movimentacao {
 
     @ManyToOne(() => Usuario, (usuario) => usuario.movimentacoes, { nullable: false, eager: true })
     @JoinColumn({ name: "usuario_id" })
-    usuario: Usuario;
+    usuario: Relation<Usuario>;
 
     @CreateDateColumn({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     dataHora: Date;

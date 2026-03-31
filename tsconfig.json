@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
@@ -40,6 +41,9 @@
     "src/utils/leituraFile.ts",
     "src/utils/pesquisadorFile.ts",
     "src/utils/sensorFile.ts",
-    "src/types/Sensor.ts"
+    "src/types/Sensor.ts",
+    "cypress",             
+    "cypress.config.ts",   
+    "**/*.cy.ts"           
   ]
 }

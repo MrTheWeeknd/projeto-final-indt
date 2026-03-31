@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, type Relation } from "typeorm"; // <-- Adicionado type Relation
 import { Categoria } from "./Categoria.js";
 import { Movimentacao } from "./Movimentacao.js";
 
@@ -19,7 +19,7 @@ export class Insumo {
 
     @ManyToOne(() => Categoria, (categoria) => categoria.insumos, { nullable: false, eager: true })
     @JoinColumn({ name: "categoria_id" })
-    categoria: Categoria;
+    categoria: Relation<Categoria>;
 
     @Column({ name: "unidade_medida", type: "varchar", nullable: false })
     unidadeMedida: string;
@@ -40,5 +40,5 @@ export class Insumo {
     ativo: boolean;
 
     @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.insumo)
-    movimentacoes: Movimentacao[];
+    movimentacoes: Relation<Movimentacao>[];
 }

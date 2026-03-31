@@ -7,10 +7,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { appDataSource } from "./database/appDataSource.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
-import categoriaRouter from "./routes/categoriaRoutes.js";
-import insumoRouter from "./routes/insumoRoutes.js";
-import movimentacaoRouter from "./routes/movimentacaoRoutes.js";
-import usuarioRouter from "./routes/usuarioRoutes.js";
+import indexRouter from "./routes/index.routes.js";
 
 dotenv.config();
 
@@ -40,11 +37,7 @@ app.get("/api/health", (_req, res) => {
     res.status(200).json({ status: "ok" });
 });
 
-app.use("/api", categoriaRouter);
-app.use("/api", insumoRouter);
-app.use("/api", movimentacaoRouter);
-app.use("/api", usuarioRouter);
-
+app.use('/api', indexRouter);
 app.use(errorMiddleware);
 
 appDataSource.initialize()

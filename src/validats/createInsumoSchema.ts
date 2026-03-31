@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createInsumoSchema = z.object({
+export const baseInsumoSchema = z.object({
     codigo: z.string().trim().min(1, "Codigo e obrigatorio").max(50, "Codigo muito longo"),
     nome: z.string().trim().min(3, "Nome deve ter pelo menos 3 caracteres").max(120, "Nome muito longo"),
     descricao: z.string().trim().max(255, "Descricao muito longa").optional(),
@@ -11,7 +11,19 @@ export const createInsumoSchema = z.object({
     estoqueMaximo: z.coerce.number().min(0, "Estoque maximo nao pode ser negativo").optional(),
     localizacao: z.string().trim().max(120, "Localizacao muito longa").optional(),
     ativo: z.boolean().optional(),
-}).refine((dados) => dados.estoqueMaximo === undefined || dados.estoqueMaximo >= dados.estoqueMinimo, {
+});
+
+export const createInsumoSchema = baseInsumoSchema.refine((dados) => dados.estoqueMaximo === undefined || dados.estoqueMaximo >= dados.estoqueMinimo, {
+    message: "Estoque maximo deve ser maior ou igual ao estoque minimo",
+    path: ["estoqueMaximo"],
+});
+
+export const updateInsumoSchema = baseInsumoSchema.partial().refine((dados) => {
+    if (dados.estoqueMaximo !== undefined && dados.estoqueMinimo !== undefined) {
+        return dados.estoqueMaximo >= dados.estoqueMinimo;
+    }
+    return true;
+}, {
     message: "Estoque maximo deve ser maior ou igual ao estoque minimo",
     path: ["estoqueMaximo"],
 });
