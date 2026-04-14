@@ -1,0 +1,132 @@
+<section class="relative min-h-dvh overflow-hidden px-5 py-8 md:px-8">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[linear-gradient(transparent_0%,rgb(255_87_34_/_0.03)_100%),repeating-linear-gradient(180deg,transparent_0,transparent_3px,rgb(255_255_255_/_0.013)_4px)] opacity-70"
+  ></div>
+
+  <div class="relative z-10 mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[430px] flex-col items-center justify-center">
+    <header class="mb-7 grid justify-items-center gap-1">
+      <span class="font-[var(--font-display)] text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-[var(--primary)] md:text-[56px]">
+        BLACKBOX
+      </span>
+      <span class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.4em] text-[var(--text-muted)]">
+        Sistema de estoque
+      </span>
+    </header>
+
+    <section
+      class="relative w-full overflow-hidden border border-[var(--outline)] bg-[linear-gradient(180deg,rgb(37_34_34_/_0.98),rgb(28_27_27_/_0.98))] px-6 py-6 md:px-8 md:py-8"
+    >
+      <div class="absolute right-4 top-4 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[rgb(143_113_104_/_0.38)]">
+        Ref: STK-2.4.0-AUTH
+      </div>
+
+      <div class="mb-8 flex items-start gap-4">
+        <span class="mt-1 h-8 w-1 bg-[var(--primary)]"></span>
+
+        <div>
+          <h1 class="font-[var(--font-display)] text-[28px] leading-[1] font-extrabold tracking-[-0.04em] text-[var(--text)] md:text-[31px]">
+            ACESSO RESTRITO
+          </h1>
+          <p class="mt-2 font-[var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            INSIRA SUAS CREDENCIAIS OPERACIONAIS
+          </p>
+        </div>
+      </div>
+
+      <form class="grid gap-5" [formGroup]="loginForm" (ngSubmit)="submit()">
+        <label class="grid gap-2">
+          <span class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            IDENTIFICACAO (E-MAIL)
+          </span>
+
+          <div
+            class="grid grid-cols-[42px_1fr] items-center border-b-2 border-[var(--outline-strong)] bg-[var(--surface-input)] transition-colors focus-within:border-[var(--primary)]"
+          >
+            <span class="grid h-full place-items-center font-[var(--font-mono)] text-[14px] text-[var(--text-muted)]">
+              &#64;
+            </span>
+
+            <input
+              class="h-[52px] w-full border-0 bg-transparent pr-4 text-[15px] text-[var(--text)] outline-none placeholder:text-[rgb(143_113_104_/_0.72)]"
+              type="email"
+              formControlName="email"
+              placeholder="operador@blackbox.tec"
+              autocomplete="email"
+            />
+          </div>
+
+          @if (showEmailFormatError) {
+            <span class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.12em] text-[var(--danger)]">
+              Informe um e-mail valido.
+            </span>
+          }
+        </label>
+
+        <label class="grid gap-2">
+          <span class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            CHAVE DE SEGURANCA (SENHA)
+          </span>
+
+          <div
+            class="grid grid-cols-[42px_1fr] items-center border-b-2 border-[var(--outline-strong)] bg-[var(--surface-input)] transition-colors focus-within:border-[var(--primary)]"
+          >
+            <span class="grid h-full place-items-center font-[var(--font-mono)] text-[12px] text-[var(--text-muted)]">
+              []
+            </span>
+
+            <input
+              class="h-[52px] w-full border-0 bg-transparent pr-4 text-[15px] text-[var(--text)] outline-none placeholder:text-[rgb(143_113_104_/_0.72)]"
+              type="password"
+              formControlName="senha"
+              placeholder="********"
+              autocomplete="current-password"
+            />
+          </div>
+        </label>
+
+        @if (errorMessage()) {
+          <div class="border-l-[3px] border-[var(--danger)] bg-[rgb(255_157_136_/_0.08)] px-4 py-3 font-[var(--font-mono)] text-[12px] text-[var(--danger)]">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button
+          class="mt-2 flex min-h-[58px] items-center justify-center gap-3 border border-[rgb(255_87_34_/_0.55)] bg-[linear-gradient(100deg,var(--primary)_0%,var(--primary-dark)_100%)] px-5 font-[var(--font-body)] text-[15px] font-extrabold uppercase tracking-[0.18em] text-[var(--primary-ink)] transition duration-150 hover:brightness-105 disabled:opacity-70"
+          type="submit"
+          [disabled]="isSubmitting()"
+        >
+          {{ isSubmitting() ? 'VALIDANDO...' : 'ENTRAR' }}
+          <span aria-hidden="true">-></span>
+        </button>
+      </form>
+
+      <div class="mt-4 flex flex-col gap-3 text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)] md:flex-row md:items-center md:justify-between">
+        <a class="font-[var(--font-mono)]" href="javascript:void(0)">ESQUECEU A SENHA?</a>
+
+        <div class="inline-flex items-center gap-2 font-[var(--font-mono)]">
+          <span
+            class="h-[7px] w-[7px]"
+            [ngClass]="systemOnline() ? 'bg-[var(--info)]' : 'bg-[var(--danger)]'"
+          ></span>
+          {{ systemOnline() ? 'SISTEMA ONLINE' : 'API OFFLINE' }}
+        </div>
+      </div>
+
+      <div class="mt-7 grid grid-cols-[1.15fr_1fr]">
+        <span class="h-1 bg-[linear-gradient(90deg,var(--primary),rgb(255_140_108_/_0.9))]"></span>
+        <span class="h-1 bg-[rgb(171_137_128_/_0.28)]"></span>
+      </div>
+    </section>
+
+    <footer
+      class="mt-4 flex w-full flex-col gap-2 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[rgb(143_113_104_/_0.55)] md:flex-row md:items-start md:justify-between"
+    >
+      <div class="grid gap-1">
+        <span>LOCAL: IP 127.0.0.1</span>
+        <span>TERMINAL: BBX-09</span>
+      </div>
+
+      <span>PROPRIEDADE DE BLACKBOX INDUSTRIES</span>
+    </footer>
+  </div>
+</section>
