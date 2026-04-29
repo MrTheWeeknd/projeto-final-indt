@@ -92,6 +92,22 @@ export class DashboardPageComponent {
     void this.router.navigateByUrl('/login');
   }
 
+  protected goToInsumos(): void {
+    void this.router.navigateByUrl('/insumos');
+  }
+
+  protected goToMovimentacoes(): void {
+    void this.router.navigateByUrl('/movimentacoes');
+  }
+
+  protected goToNovaMovimentacao(): void {
+    void this.router.navigate(['/movimentacoes'], { queryParams: { novo: '1' } });
+  }
+
+  protected goToCategorias(): void {
+    void this.router.navigateByUrl('/categorias');
+  }
+
   protected reload(): void {
     this.loadDashboard();
   }

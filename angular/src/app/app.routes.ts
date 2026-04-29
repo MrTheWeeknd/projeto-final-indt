@@ -20,6 +20,30 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'insumos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/insumos/pages/insumos-page.component').then(
+        (module) => module.InsumosPageComponent,
+      ),
+  },
+  {
+    path: 'movimentacoes',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/movimentacoes/pages/movimentacoes-page.component').then(
+        (module) => module.MovimentacoesPageComponent,
+      ),
+  },
+  {
+    path: 'categorias',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/categorias/pages/categorias-page.component').then(
+        (module) => module.CategoriasPageComponent,
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'login',
