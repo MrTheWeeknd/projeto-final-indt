@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 
 const PASSWORD_PREFIX = "scrypt";
 const DEFAULT_HASH_KEYLEN = 64;
-const DEFAULT_TOKEN_EXPIRATION = "15m";
+const DEFAULT_TOKEN_EXPIRATION = "8h";
 
 type JwtPayload = {
     sub: string;

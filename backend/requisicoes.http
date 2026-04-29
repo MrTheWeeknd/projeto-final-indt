@@ -1,0 +1,178 @@
+@baseUrl = http://localhost:6060/api
+@usuarioId = 1
+@categoriaId = 1
+@insumoId = 1
+@movimentacaoId = 1
+
+### Health check
+GET http://localhost:6060/api/health
+
+### Criar usuario
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "email": "admin@email.com",
+  "senha": "123456"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@email.com",
+  "senha": "123456"
+}
+
+### Listar usuarios
+GET {{baseUrl}}/usuarios
+Authorization: Bearer {{login.response.body.token}}
+
+### Buscar usuario por ID
+GET {{baseUrl}}/usuarios/{{usuarioId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Atualizar usuario
+PUT {{baseUrl}}/usuarios/{{usuarioId}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "email": "admin.atualizado@email.com",
+  "senha": "123456"
+}
+
+### Remover usuario
+DELETE {{baseUrl}}/usuarios/{{usuarioId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Criar categoria
+POST {{baseUrl}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Eletronicos",
+  "descricao": "Componentes e materiais eletronicos"
+}
+
+### Listar categorias
+GET {{baseUrl}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+
+### Buscar categoria por ID
+GET {{baseUrl}}/categorias/{{categoriaId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Atualizar categoria
+PUT {{baseUrl}}/categorias/{{categoriaId}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Componentes eletronicos",
+  "descricao": "Categoria atualizada"
+}
+
+### Remover categoria
+DELETE {{baseUrl}}/categorias/{{categoriaId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Criar insumo
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "INS-001",
+  "nome": "Resistor 10k",
+  "descricao": "Resistor de 10k ohms",
+  "categoriaId": {{categoriaId}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 100,
+  "estoqueMinimo": 10,
+  "estoqueMaximo": 500,
+  "localizacao": "Prateleira A1",
+  "ativo": true
+}
+
+### Listar insumos
+GET {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+
+### Buscar insumo por ID
+GET {{baseUrl}}/insumos/{{insumoId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Atualizar insumo
+PUT {{baseUrl}}/insumos/{{insumoId}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Resistor 10k 1/4W",
+  "estoqueMinimo": 20,
+  "estoqueMaximo": 600,
+  "localizacao": "Prateleira B2"
+}
+
+### Remover insumo
+DELETE {{baseUrl}}/insumos/{{insumoId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Criar movimentacao de entrada
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{insumoId}},
+  "usuarioId": {{usuarioId}},
+  "tipo": "entrada",
+  "motivo": "compra",
+  "quantidade": 25,
+  "observacao": "Compra inicial"
+}
+
+### Criar movimentacao de saida
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{insumoId}},
+  "usuarioId": {{usuarioId}},
+  "tipo": "saida",
+  "motivo": "consumo",
+  "quantidade": 5,
+  "linhaDestino": "Linha 01",
+  "observacao": "Uso em producao"
+}
+
+### Listar movimentacoes
+GET {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+
+### Buscar movimentacao por ID
+GET {{baseUrl}}/movimentacoes/{{movimentacaoId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Atualizar movimentacao
+PUT {{baseUrl}}/movimentacoes/{{movimentacaoId}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "quantidade": 10,
+  "observacao": "Quantidade ajustada"
+}
+
+### Remover movimentacao
+DELETE {{baseUrl}}/movimentacoes/{{movimentacaoId}}
+Authorization: Bearer {{login.response.body.token}}
+
+### Dashboard
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{login.response.body.token}}

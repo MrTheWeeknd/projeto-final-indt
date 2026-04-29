@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 6060;
 app.set("trust proxy", 1);
 
 app.use(rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
+    windowMs: 1 * 60 * 1000,
+    max: 500,
     standardHeaders: true,
     legacyHeaders: false,
 }));

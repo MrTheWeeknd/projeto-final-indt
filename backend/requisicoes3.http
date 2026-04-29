@@ -1,0 +1,222 @@
+@baseUrl = http://localhost:6060/api
+@email = user@email.com
+@senha = 123456
+
+### 01 - Health check
+GET http://localhost:6060/api/health
+
+### 02 - Criar usuario para autenticar e movimentar estoque
+# @name criarUsuario
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}
+
+### 03 - Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}
+
+### 04 - Criar categoria
+# @name criarCategoria
+POST {{baseUrl}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Cenarios de estoque {{$timestamp}}",
+  "descricao": "Categoria usada para testar situacoes de estoque"
+}
+
+### 05 - Criar insumo com estoque normal
+# Estoque atual acima do minimo. Nao deve aparecer na lista critica do dashboard.
+# @name criarInsumoNormal
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "NORMAL-{{$timestamp}}",
+  "nome": "Item com estoque normal",
+  "descricao": "Estoque acima do minimo",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 80,
+  "estoqueMinimo": 20,
+  "estoqueMaximo": 100,
+  "localizacao": "A1",
+  "ativo": true
+}
+
+### 06 - Criar insumo com estoque baixo
+# Estoque atual menor ou igual ao minimo e maior que zero. Deve aparecer como status baixo.
+# @name criarInsumoBaixo
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "BAIXO-{{$timestamp}}",
+  "nome": "Item com estoque baixo",
+  "descricao": "Estoque abaixo do minimo",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 8,
+  "estoqueMinimo": 20,
+  "estoqueMaximo": 100,
+  "localizacao": "A2",
+  "ativo": true
+}
+
+### 07 - Criar insumo em situacao critica
+# Continua sendo status baixo no backend, mas com percentual de cobertura bem pequeno.
+# @name criarInsumoCritico
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "CRITICO-{{$timestamp}}",
+  "nome": "Item em situacao critica",
+  "descricao": "Estoque muito abaixo do minimo",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 1,
+  "estoqueMinimo": 50,
+  "estoqueMaximo": 200,
+  "localizacao": "A3",
+  "ativo": true
+}
+
+### 08 - Criar insumo com estoque zerado
+# Estoque atual igual a zero. Deve aparecer como status zerado.
+# @name criarInsumoZerado
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "ZERADO-{{$timestamp}}",
+  "nome": "Item com estoque zerado",
+  "descricao": "Sem saldo disponivel",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 0,
+  "estoqueMinimo": 10,
+  "estoqueMaximo": 100,
+  "localizacao": "A4",
+  "ativo": true
+}
+
+### 09 - Criar insumo que vai zerar por movimentacao
+# Comeca com saldo positivo e sera zerado por uma saida.
+# @name criarInsumoParaZerar
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "SAIDA-ZERA-{{$timestamp}}",
+  "nome": "Item zerado por saida",
+  "descricao": "Sera zerado por movimentacao de saida",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 15,
+  "estoqueMinimo": 10,
+  "estoqueMaximo": 100,
+  "localizacao": "A5",
+  "ativo": true
+}
+
+### 10 - Movimentar saida que zera o insumo
+# Depois desta requisicao, o saldo do insumo fica 0.
+# @name criarMovimentacaoZerar
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{criarInsumoParaZerar.response.body.id}},
+  "usuarioId": {{criarUsuario.response.body.id}},
+  "tipo": "saida",
+  "motivo": "consumo",
+  "quantidade": 15,
+  "linhaDestino": "Linha 01",
+  "observacao": "Saida para testar item zerado por movimentacao"
+}
+
+### 11 - Movimentar entrada no item baixo
+# Aumenta o estoque, mas ainda deixa o item abaixo do minimo: 8 + 5 = 13, minimo 20.
+# @name criarMovimentacaoEntradaBaixo
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{criarInsumoBaixo.response.body.id}},
+  "usuarioId": {{criarUsuario.response.body.id}},
+  "tipo": "entrada",
+  "motivo": "compra",
+  "quantidade": 5,
+  "observacao": "Entrada insuficiente para sair do estoque baixo"
+}
+
+### 12 - Listar insumos
+GET {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+
+### 13 - Listar movimentacoes
+GET {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+
+### 14 - Dashboard com os cenarios
+# Deve mostrar itensSemEstoque, itensAbaixoMinimo, listaCritica e alertas.
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{login.response.body.token}}
+
+### 15 - Apagar movimentacao que zerou o insumo
+# Apague movimentacoes antes dos insumos, porque insumo com movimentacao nao pode ser removido.
+DELETE {{baseUrl}}/movimentacoes/{{criarMovimentacaoZerar.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 16 - Apagar movimentacao de entrada do item baixo
+DELETE {{baseUrl}}/movimentacoes/{{criarMovimentacaoEntradaBaixo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 17 - Apagar insumo normal
+DELETE {{baseUrl}}/insumos/{{criarInsumoNormal.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 18 - Apagar insumo baixo
+DELETE {{baseUrl}}/insumos/{{criarInsumoBaixo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 19 - Apagar insumo critico
+DELETE {{baseUrl}}/insumos/{{criarInsumoCritico.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 20 - Apagar insumo zerado
+DELETE {{baseUrl}}/insumos/{{criarInsumoZerado.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 21 - Apagar insumo zerado por movimentacao
+DELETE {{baseUrl}}/insumos/{{criarInsumoParaZerar.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 22 - Apagar categoria
+# Apague a categoria depois dos insumos vinculados a ela.
+DELETE {{baseUrl}}/categorias/{{criarCategoria.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 23 - Apagar usuario
+# Apague o usuario por ultimo, depois das movimentacoes vinculadas a ele.
+DELETE {{baseUrl}}/usuarios/{{criarUsuario.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}

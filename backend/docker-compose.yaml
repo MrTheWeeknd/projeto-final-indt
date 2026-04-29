@@ -1,9 +1,9 @@
-name: reservaIoT
+name: blackbox
 
 services:
   api:
     build: .
-    container_name: reserva-api
+    container_name: blackbox-api
     ports:
       - "6060:6060"
     env_file:
