@@ -1,0 +1,204 @@
+@baseUrl = http://localhost:6060/api
+@email = teste@email.com
+@senha = 123456
+
+### 01 - Health check
+GET http://localhost:6060/api/health
+
+### 02 - Criar usuario
+# @name criarUsuario
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}
+
+### 03 - Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}
+
+### 04 - Criar categoria
+# @name criarCategoria
+POST {{baseUrl}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Eletronicos {{$timestamp}}",
+  "descricao": "Componentes e materiais eletronicos"
+}
+
+### 05 - Criar insumo
+# @name criarInsumo
+POST {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "codigo": "INS-{{$timestamp}}",
+  "nome": "Resistor 10k",
+  "descricao": "Resistor de 10k ohms",
+  "categoriaId": {{criarCategoria.response.body.id}},
+  "unidadeMedida": "un",
+  "estoqueAtual": 100,
+  "estoqueMinimo": 10,
+  "estoqueMaximo": 500,
+  "localizacao": "Prateleira A1",
+  "ativo": true
+}
+
+### 06 - Criar movimentacao de entrada
+# @name criarMovimentacaoEntrada
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{criarInsumo.response.body.id}},
+  "usuarioId": {{criarUsuario.response.body.id}},
+  "tipo": "entrada",
+  "motivo": "compra",
+  "quantidade": 25,
+  "observacao": "Compra inicial"
+}
+
+### 07 - Criar movimentacao de saida
+# @name criarMovimentacaoSaida
+POST {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "insumoId": {{criarInsumo.response.body.id}},
+  "usuarioId": {{criarUsuario.response.body.id}},
+  "tipo": "saida",
+  "motivo": "consumo",
+  "quantidade": 5,
+  "linhaDestino": "Linha 01",
+  "observacao": "Uso em producao"
+}
+
+### 08 - Listar usuarios
+GET {{baseUrl}}/usuarios
+Authorization: Bearer {{login.response.body.token}}
+
+### 09 - Buscar usuario criado
+GET {{baseUrl}}/usuarios/{{criarUsuario.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 10 - Listar categorias
+GET {{baseUrl}}/categorias
+Authorization: Bearer {{login.response.body.token}}
+
+### 11 - Buscar categoria criada
+GET {{baseUrl}}/categorias/{{criarCategoria.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 12 - Listar insumos
+GET {{baseUrl}}/insumos
+Authorization: Bearer {{login.response.body.token}}
+
+### 13 - Buscar insumo criado
+GET {{baseUrl}}/insumos/{{criarInsumo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 14 - Listar movimentacoes
+GET {{baseUrl}}/movimentacoes
+Authorization: Bearer {{login.response.body.token}}
+
+### 15 - Buscar movimentacao de entrada
+GET {{baseUrl}}/movimentacoes/{{criarMovimentacaoEntrada.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 16 - Buscar movimentacao de saida
+GET {{baseUrl}}/movimentacoes/{{criarMovimentacaoSaida.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+
+### 17 - Dashboard
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{login.response.body.token}}
+
+### 18 - Atualizar categoria criada
+# @name atualizarCategoria
+PUT {{baseUrl}}/categorias/{{criarCategoria.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Componentes eletronicos {{$timestamp}}",
+  "descricao": "Categoria atualizada"
+}
+
+### 19 - Atualizar insumo criado
+# @name atualizarInsumo
+PUT {{baseUrl}}/insumos/{{criarInsumo.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "nome": "Resistor 10k 1/4W",
+  "estoqueMinimo": 20,
+  "estoqueMaximo": 600,
+  "localizacao": "Prateleira B2"
+}
+
+### 20 - Atualizar movimentacao de saida
+# @name atualizarMovimentacaoSaida
+PUT {{baseUrl}}/movimentacoes/{{criarMovimentacaoSaida.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "quantidade": 10,
+  "observacao": "Quantidade ajustada"
+}
+
+### 21 - Atualizar usuario criado
+# @name atualizarUsuario
+PUT {{baseUrl}}/usuarios/{{criarUsuario.response.body.id}}
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "email": "atualizado.{{email}}"
+}
+
+### 22 - Login com usuario atualizado
+# @name loginAtualizado
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "atualizado.{{email}}",
+  "senha": "{{senha}}"
+}
+
+### 23 - Apagar movimentacao de saida
+# Apague as movimentacoes antes do insumo.
+DELETE {{baseUrl}}/movimentacoes/{{criarMovimentacaoSaida.response.body.id}}
+Authorization: Bearer {{loginAtualizado.response.body.token}}
+
+### 24 - Apagar movimentacao de entrada
+DELETE {{baseUrl}}/movimentacoes/{{criarMovimentacaoEntrada.response.body.id}}
+Authorization: Bearer {{loginAtualizado.response.body.token}}
+
+### 25 - Apagar insumo
+# So funciona depois de apagar as movimentacoes vinculadas a ele.
+DELETE {{baseUrl}}/insumos/{{criarInsumo.response.body.id}}
+Authorization: Bearer {{loginAtualizado.response.body.token}}
+
+### 26 - Apagar categoria
+DELETE {{baseUrl}}/categorias/{{criarCategoria.response.body.id}}
+Authorization: Bearer {{loginAtualizado.response.body.token}}
+
+### 27 - Apagar usuario
+DELETE {{baseUrl}}/usuarios/{{criarUsuario.response.body.id}}
+Authorization: Bearer {{loginAtualizado.response.body.token}}
