@@ -101,7 +101,9 @@
       </form>
 
       <div class="mt-4 flex flex-col gap-3 text-[11px] uppercase tracking-[0.16em] text-[var(--text-muted)] md:flex-row md:items-center md:justify-between">
-        <a class="font-[var(--font-mono)]" href="javascript:void(0)">ESQUECEU A SENHA?</a>
+        <button class="font-[var(--font-mono)] transition hover:text-[var(--text)]" type="button" (click)="goToRegister()">
+          CADASTRAR NOVO ACESSO
+        </button>
 
         <div class="inline-flex items-center gap-2 font-[var(--font-mono)]">
           <span

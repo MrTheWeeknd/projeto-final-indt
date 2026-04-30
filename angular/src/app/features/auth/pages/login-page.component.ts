@@ -65,4 +65,8 @@ export class LoginPageComponent {
         },
       });
   }
+
+  protected goToRegister(): void {
+    void this.router.navigateByUrl('/cadastro');
+  }
 }

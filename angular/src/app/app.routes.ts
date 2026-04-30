@@ -12,6 +12,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'cadastro',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/register-page.component').then(
+        (module) => module.RegisterPageComponent,
+      ),
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>
