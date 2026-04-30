@@ -17,6 +17,16 @@ type LoginPayload = {
   senha: string;
 };
 
+type RegisterPayload = {
+  email: string;
+  senha: string;
+};
+
+type RegisteredUser = {
+  id: number;
+  email: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -28,6 +38,10 @@ export class AuthService {
     return this.http
       .post<AuthSession>(`${this.apiBaseUrl}/auth/login`, payload)
       .pipe(tap((session) => this.saveSession(session)));
+  }
+
+  register(payload: RegisterPayload): Observable<RegisteredUser> {
+    return this.http.post<RegisteredUser>(`${this.apiBaseUrl}/usuarios`, payload);
   }
 
   logout(): void {
