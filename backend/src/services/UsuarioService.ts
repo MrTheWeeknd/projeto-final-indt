@@ -13,6 +13,14 @@ type UsuarioPayload = {
     senha: string;
 };
 
+// I-define ti type para kadagiti pammalubos
+type PermissoesPayload = {
+    dashboard: boolean;
+    insumos: boolean;
+    categorias: boolean;
+    movimentacoes: boolean;
+};
+
 class UsuarioService {
     private usuarioRepository = appDataSource.getRepository(Usuario);
 
@@ -30,7 +38,7 @@ class UsuarioService {
         });
 
         if (!usuario) {
-            throw new AppError(404, "Usuario nao encontrado");
+            throw new AppError(404, "Saan a nasarakan ti user");
         }
 
         return removerSenhaDoUsuario(usuario);
@@ -42,13 +50,69 @@ class UsuarioService {
         });
 
         if (usuarioExistente) {
-            throw new AppError(409, "Ja existe um usuario com esse email");
+            throw new AppError(409, "Adda metten ti user nga addaan iti daytoy nga email");
         }
 
         const usuario = this.usuarioRepository.create({
             ...payload,
             senha: await hashPassword(payload.senha),
+            role: "user",
         });
+        await this.usuarioRepository.save(usuario);
+
+        return removerSenhaDoUsuario(usuario);
+    }
+
+    public async promoverParaAdmin(id: number): Promise<UsuarioSemSenha> {
+        const usuario = await this.usuarioRepository.findOne({
+            where: { id },
+        });
+
+        if (!usuario) {
+            throw new AppError(404, "Saan a nasarakan ti user");
+        }
+
+        if (usuario.role === "admin") {
+            throw new AppError(400, "Ti user ket maysa idin nga admin");
+        }
+
+        usuario.role = "admin";
+        await this.usuarioRepository.save(usuario);
+
+        return removerSenhaDoUsuario(usuario);
+    }
+
+    public async rebaixarParaUsuario(id: number): Promise<UsuarioSemSenha> {
+        const usuario = await this.usuarioRepository.findOne({
+            where: { id },
+        });
+
+        if (!usuario) {
+            throw new AppError(404, "Saan a nasarakan ti user");
+        }
+
+        if (usuario.role === "user") {
+            throw new AppError(400, "Ti user ket maysa idin a trabahador");
+        }
+
+        usuario.role = "user";
+        await this.usuarioRepository.save(usuario);
+
+        return removerSenhaDoUsuario(usuario);
+    }
+
+    // ✨ BARO A METODO: I-update na dagiti granular a pammalubos ti user
+    public async atualizarPermissoes(id: number, permissoes: PermissoesPayload): Promise<UsuarioSemSenha> {
+        const usuario = await this.usuarioRepository.findOne({
+            where: { id },
+        });
+
+        if (!usuario) {
+            throw new AppError(404, "Saan a nasarakan ti user");
+        }
+
+        // I-save dagiti baro a pammalubos idiay database
+        usuario.permissoes = permissoes;
         await this.usuarioRepository.save(usuario);
 
         return removerSenhaDoUsuario(usuario);
@@ -60,7 +124,7 @@ class UsuarioService {
         });
 
         if (!usuario) {
-            throw new AppError(404, "Usuario nao encontrado");
+            throw new AppError(404, "Saan a nasarakan ti user");
         }
 
         if (payload.email && payload.email !== usuario.email) {
@@ -69,7 +133,7 @@ class UsuarioService {
             });
 
             if (usuarioComMesmoEmail) {
-                throw new AppError(409, "Ja existe um usuario com esse email");
+                throw new AppError(409, "Adda metten ti user nga addaan iti daytoy nga email");
             }
         }
 
@@ -92,11 +156,11 @@ class UsuarioService {
         });
 
         if (!usuario) {
-            throw new AppError(404, "Usuario nao encontrado");
+            throw new AppError(404, "Saan a nasarakan ti user");
         }
 
         if (usuario.movimentacoes.length > 0) {
-            throw new AppError(409, "Nao e possivel remover um usuario com movimentacoes");
+            throw new AppError(409, "Saan a mabalin a burakken ti user nga addaan kadagiti panaggaraw");
         }
 
         await this.usuarioRepository.remove(usuario);

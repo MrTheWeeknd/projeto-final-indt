@@ -8,6 +8,7 @@ import rateLimit from "express-rate-limit";
 import { appDataSource } from "./database/appDataSource.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import indexRouter from "./routes/index.routes.js";
+import { seedAdminUser } from "./utils/seedAdminUser.js";
 
 dotenv.config();
 
@@ -41,8 +42,10 @@ app.use('/api', indexRouter);
 app.use(errorMiddleware);
 
 appDataSource.initialize()
-    .then(() => {
+    .then(async () => {
         console.log("Conectou com o banco!");
+        
+        await seedAdminUser();
 
         app.listen(PORT, () => {
             console.log(`Server is running in port: ${PORT}`);

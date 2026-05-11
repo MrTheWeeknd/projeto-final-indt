@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./src",
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
@@ -13,14 +14,16 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "strict": true,
-    "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
   },
+  "include": ["**/*.ts"],    // <--- ADICIONE ISSO para limitar o que é compilado
   "exclude": [
+    "dist",                  // <--- IMPORTANTE: Exclua a pasta de saída
+    "node_modules",
     "src/services/AreaService.ts",
     "src/services/LeituraService.ts",
     "src/services/PesquisadorService.ts",

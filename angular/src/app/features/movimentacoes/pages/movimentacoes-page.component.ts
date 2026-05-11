@@ -6,6 +6,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
+import { PermissionsService } from '../../../core/auth/permissions.service';
 import { Insumo, InsumosService } from '../../insumos/data/insumos.service';
 import {
   CreateMovimentacaoPayload,
@@ -32,6 +33,7 @@ export class MovimentacoesPageComponent {
   private readonly movimentacoesService = inject(MovimentacoesService);
   private readonly insumosService = inject(InsumosService);
   private readonly authService = inject(AuthService);
+  private readonly permissionsService = inject(PermissionsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -118,6 +120,10 @@ export class MovimentacoesPageComponent {
     return this.authService.getSession()?.usuario.email ?? 'operador@blackbox.tec';
   }
 
+  protected canManageMovimentacoes(): boolean {
+    return this.permissionsService.canEditMovimentacao();
+  }
+
   protected updateSearchTerm(term: string): void {
     this.searchTerm.set(term);
     this.page.set(1);
@@ -157,6 +163,22 @@ export class MovimentacoesPageComponent {
   protected goToCategorias(): void {
     void this.router.navigateByUrl('/categorias');
   }
+
+  // Adicione isso no seu movimentacoes-page.component.ts
+  protected isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  protected hasMovimentacoesPermission(): boolean {
+    const user = this.authService.getCurrentUser();
+    // Por padrão (se não tiver a coluna setada), senao retorna o valor salvo.
+    return user?.permissoes?.movimentacoes !== false;
+  }
+
+  protected goToAdmin(): void {
+    void this.router.navigateByUrl('/admin');
+  }
+
 
   protected toggleCreateForm(): void {
     this.showCreateForm.update((value) => !value);
@@ -226,7 +248,9 @@ export class MovimentacoesPageComponent {
             return;
           }
 
-          this.formMessage.set(error.error?.message ?? 'Nao foi possivel registrar a movimentacao.');
+          this.formMessage.set(
+            error.error?.message ?? 'Nao foi possivel registrar a movimentacao.',
+          );
           this.saving.set(false);
         },
       });
@@ -287,7 +311,9 @@ export class MovimentacoesPageComponent {
       .subscribe({
         next: ({ movimentacoes, insumos }) => {
           this.movimentacoes.set(
-            movimentacoes.sort((a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime()),
+            movimentacoes.sort(
+              (a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime(),
+            ),
           );
           this.insumos.set(insumos.filter((insumo) => insumo.ativo));
           this.syncTime.set(this.getCurrentTime());
@@ -299,7 +325,9 @@ export class MovimentacoesPageComponent {
             return;
           }
 
-          this.errorMessage.set(error.error?.message ?? 'Nao foi possivel carregar as movimentacoes.');
+          this.errorMessage.set(
+            error.error?.message ?? 'Nao foi possivel carregar as movimentacoes.',
+          );
           this.loading.set(false);
         },
       });

@@ -30,10 +30,19 @@
         />
       </label>
 
+      <!-- CABEÇALHO COM EMAIL E ROLE -->
       <div class="flex items-center justify-start gap-3 lg:justify-end">
         <span class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
           {{ userEmail }}
         </span>
+
+        <!-- BADGE DE ROLE -->
+        <span 
+          class="px-2 py-1 font-[var(--font-mono)] text-[9px] font-black uppercase tracking-[0.12em]"
+          [ngClass]="isAdmin() ? 'bg-[var(--danger)] text-white' : 'bg-[var(--surface-low)] text-[var(--text-muted)] border border-[var(--outline)]'">
+          {{ isAdmin() ? 'ADMIN' : 'FUNCIONÁRIO' }}
+        </span>
+
         <button
           type="button"
           (click)="logout()"
@@ -65,9 +74,7 @@
           type="button"
           class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] bg-[var(--primary)] px-5 text-left text-[var(--primary-ink)]"
         >
-          <svg class="h-[15px] w-[15px] shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 3h8v8H3V3Zm10 0h8v5h-8V3ZM3 13h5v8H3v-8Zm7 0h11v8H10v-8Z" />
-          </svg>
+          <span class="text-[15px]">▦</span>
           <span
             class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]"
             >Dashboard</span
@@ -79,11 +86,7 @@
           (click)="goToInsumos()"
           class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)] transition hover:text-[var(--text)]"
         >
-          <svg class="h-[15px] w-[15px] shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M5 3h14a2 2 0 0 1 2 2v3H3V5a2 2 0 0 1 2-2Zm-2 7h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9Zm4 3v2h10v-2H7Z"
-            />
-          </svg>
+          <span class="text-[15px]">▰</span>
           <span
             class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]"
             >Insumos</span
@@ -95,9 +98,7 @@
           (click)="goToMovimentacoes()"
           class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)] transition hover:text-[var(--text)]"
         >
-          <svg class="h-[15px] w-[15px] shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path d="m7 7 3-3v2h4V4l3 3-3 3V8h-4v2L7 7Zm10 10-3 3v-2h-4v2l-3-3 3-3v2h4v-2l3 3Z" />
-          </svg>
+          <span class="text-[15px]">↔</span>
           <span
             class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]"
             >Movimentações</span
@@ -109,15 +110,22 @@
           (click)="goToCategorias()"
           class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)] transition hover:text-[var(--text)]"
         >
-          <svg class="h-[15px] w-[15px] shrink-0" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 3 4 17h16L12 3Zm-9 16h8v2H3v-2Zm10 0h8v2h-8v-2Zm1-6a3 3 0 1 1 6 0 3 3 0 0 1-6 0Z"
-            />
-          </svg>
+          <span class="text-[15px]">▲</span>
           <span
             class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]"
             >Categorias</span
           >
+        </button>
+
+        <!-- APENAS BOTÃO DO PAINEL ADMIN -->
+        <button
+          *ngIf="isAdmin()"
+          type="button"
+          (click)="goToAdmin()"
+          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[#ff7675] transition hover:brightness-125 hover:bg-[rgba(255,255,255,0.02)]"
+        >
+          <span class="text-[15px]">◬</span>
+          <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Painel Admin</span>
         </button>
       </nav>
 
@@ -125,350 +133,369 @@
 
     <main class="px-4 py-5 md:px-5 xl:px-7">
       <div class="mx-auto w-full max-w-[1180px]">
-        <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-          <div>
-            <h1
-              class="font-[var(--font-display)] text-[26px] leading-[0.96] font-black tracking-[-0.045em] text-[var(--text)] sm:text-[32px] xl:text-[38px]"
-            >
-              VISÃO OPERACIONAL
-            </h1>
-            <p
-              class="mt-2 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
-            >
-              STATUS DO TERMINAL:
-              <span class="text-[var(--text)]">ONLINE</span>
-              · SINCRONIZADO:
-              <span>{{ syncTime() }}</span>
-            </p>
-          </div>
+        
+        <!-- ============================================== -->
+        <!-- MENSAGEM DE ACESSO RESTRITO (SEM PERMISSÃO)    -->
+        <!-- ============================================== -->
+        <div *ngIf="!isAdmin() && !hasDashboardPermission()" class="mt-8 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-8 py-12 text-center">
+          <span class="block text-[40px] mb-4">⛔</span>
+          <h2 class="font-[var(--font-display)] text-[24px] font-black uppercase tracking-wide text-[var(--danger)]">
+            Acesso Restrito
+          </h2>
+          <p class="mt-2 font-[var(--font-mono)] text-[12px] uppercase tracking-[0.1em] text-[var(--text-muted)]">
+            Seu usuário não possui privilégios para visualizar o módulo de Dashboard Geral.
+          </p>
+        </div>
 
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <button
-              class="h-[36px] border border-[var(--outline-strong)] px-5 font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text)] transition hover:border-[rgb(255_87_34_/_0.55)] hover:text-[var(--primary)]"
-              type="button"
-              (click)="reload()"
-            >
-              Relatório full
-            </button>
-            <button
-              class="h-[36px] border border-[rgb(255_87_34_/_0.55)] bg-[linear-gradient(100deg,var(--primary)_0%,var(--primary-dark)_100%)] px-5 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--primary-ink)]"
-              type="button"
-              (click)="goToNovaMovimentacao()"
-            >
-              Nova movimentação
-            </button>
-          </div>
-        </section>
+        <!-- ============================================== -->
+        <!-- CONTEÚDO DA PÁGINA (COM PERMISSÃO)             -->
+        <!-- ============================================== -->
+        <ng-container *ngIf="isAdmin() || hasDashboardPermission()">
+          <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <h1
+                class="font-[var(--font-display)] text-[26px] leading-[0.96] font-black tracking-[-0.045em] text-[var(--text)] sm:text-[32px] xl:text-[38px]"
+              >
+                VISÃO OPERACIONAL
+              </h1>
+              <p
+                class="mt-2 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+              >
+                STATUS DO TERMINAL:
+                <span class="text-[var(--text)]">ONLINE</span>
+                · SINCRONIZADO:
+                <span>{{ syncTime() }}</span>
+              </p>
+            </div>
 
-        @if (loading()) {
-          <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
-            <span
-              class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
-            >
-              SINCRONIZANDO PAINEL OPERACIONAL
-            </span>
-          </section>
-        } @else if (errorMessage()) {
-          <section
-            class="border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4"
-          >
-            <span
-              class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]"
-            >
-              {{ errorMessage() }}
-            </span>
-          </section>
-        } @else if (dashboard(); as vm) {
-          <section class="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-4">
-            <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
-              <div class="mb-4 flex items-start justify-between gap-3">
-                <span
-                  class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
-                >
-                  ITENS ABAIXO DO MÍNIMO
-                </span>
-                <span class="text-[var(--danger)]">△</span>
-              </div>
-              <strong
-                class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button
+                class="h-[36px] border border-[var(--outline-strong)] px-5 font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text)] transition hover:border-[rgb(255_87_34_/_0.55)] hover:text-[var(--primary)]"
+                type="button"
+                (click)="reload()"
               >
-                {{ vm.indicadores.itensAbaixoMinimo | number: '1.0-0' }}
-              </strong>
-              <span
-                class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
+                Relatório full
+              </button>
+              <button
+                class="h-[36px] border border-[rgb(255_87_34_/_0.55)] bg-[linear-gradient(100deg,var(--primary)_0%,var(--primary-dark)_100%)] px-5 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--primary-ink)]"
+                type="button"
+                (click)="goToNovaMovimentacao()"
               >
-                AÇÃO NECESSÁRIA EM ESTOQUE CRÍTICO
-              </span>
-            </article>
-
-            <article class="border border-[var(--primary)] bg-[var(--surface-low)] px-4 py-4">
-              <div class="mb-4 flex items-start justify-between gap-3">
-                <span
-                  class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--danger)]"
-                >
-                  ITENS COM ESTOQUE ZERADO
-                </span>
-                <span class="text-[var(--danger)]">!</span>
-              </div>
-              <strong
-                class="block font-[var(--font-mono)] text-[26px] leading-none font-bold tracking-[-0.04em] text-[var(--danger)]"
-              >
-                {{ vm.indicadores.itensSemEstoque | number: '2.0-0' }}
-              </strong>
-              <span
-                class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--danger)]"
-              >
-                CRÍTICO: OPERAÇÃO EM RISCO
-              </span>
-            </article>
-
-            <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
-              <div class="mb-4 flex items-start justify-between gap-3">
-                <span
-                  class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
-                >
-                  MOVIMENTAÇÕES HOJE
-                </span>
-                <span class="text-[var(--info)]">↔</span>
-              </div>
-              <strong
-                class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
-              >
-                {{ vm.indicadores.movimentacoesHoje | number: '1.0-0' }}
-              </strong>
-              <span
-                class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
-              >
-                FLUXO REGISTRADO NO DIA ATUAL
-              </span>
-            </article>
-
-            <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
-              <div class="mb-4 flex items-start justify-between gap-3">
-                <span
-                  class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
-                >
-                  INSUMOS ATIVOS
-                </span>
-                <span class="text-[var(--text-muted)]">▣</span>
-              </div>
-              <strong
-                class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
-              >
-                {{ vm.indicadores.totalInsumosAtivos | number: '1.0-0' }}
-              </strong>
-              <span
-                class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
-              >
-                BASE MONITORADA EM TEMPO REAL
-              </span>
-            </article>
+                Nova movimentação
+              </button>
+            </div>
           </section>
 
-          <section class="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.82fr)_250px]">
-            <article class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
-              <header
-                class="flex items-center justify-between gap-4 border-b border-[var(--outline)] bg-[rgba(255,255,255,0.03)] px-5 py-4"
+          @if (loading()) {
+            <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
+              <span
+                class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
               >
-                <h2
-                  class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
-                >
-                  INSUMOS CRÍTICOS
-                </h2>
-                <span
-                  class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
-                >
-                  FILTRAR POR GRAVIDADE
-                </span>
-              </header>
-
-              <div class="hidden grid-cols-[2fr_1.2fr_1fr_1fr_1fr] gap-4 px-5 py-3 md:grid">
-                <span
-                  class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
-                  >NOME</span
-                >
-                <span
-                  class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
-                  >CATEGORIA</span
-                >
-                <span
-                  class="text-center font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
-                  >ESTOQUE ATUAL</span
-                >
-                <span
-                  class="text-center font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
-                  >ESTOQUE MÍNIMO</span
-                >
-                <span
-                  class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
-                  >VISUAL</span
-                >
-              </div>
-
-              <div>
-                @for (item of criticalItems; track item.id; let index = $index) {
-                  <div
-                    class="grid gap-3 border-t border-[rgba(255,255,255,0.03)] px-5 py-4 md:grid-cols-[2fr_1.2fr_1fr_1fr_1fr] md:items-center md:gap-4"
-                    [ngClass]="index === 0 ? 'bg-[rgba(82,44,32,0.78)]' : 'bg-transparent'"
+                SINCRONIZANDO PAINEL OPERACIONAL
+              </span>
+            </section>
+          } @else if (errorMessage()) {
+            <section
+              class="border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4"
+            >
+              <span
+                class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]"
+              >
+                {{ errorMessage() }}
+              </span>
+            </section>
+          } @else if (dashboard(); as vm) {
+            <section class="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+              <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <span
+                    class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
                   >
-                    <div>
-                      <strong
-                        class="block max-w-[200px] font-[var(--font-body)] text-[14px] leading-[1.45] font-bold text-[var(--text)]"
-                      >
-                        {{ item.nome }}
-                      </strong>
-                    </div>
-
-                    <span
-                      class="font-[var(--font-body)] text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]"
-                    >
-                      {{ item.categoria }}
-                    </span>
-
-                    <span
-                      class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)] md:text-center"
-                    >
-                      {{ item.estoqueAtual | number: '2.0-0' }}
-                    </span>
-
-                    <span
-                      class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center"
-                    >
-                      {{ item.estoqueMinimo | number: '2.0-0' }}
-                    </span>
-
-                    <div class="grid gap-2">
-                      <div class="h-[8px] bg-[rgba(255,255,255,0.12)]">
-                        <span
-                          class="block h-full"
-                          [style.width.%]="
-                            item.percentualCobertura > 100 ? 100 : item.percentualCobertura
-                          "
-                          [ngClass]="
-                            item.status === 'zerado'
-                              ? 'bg-[linear-gradient(90deg,#ff7d57,#ffc1b2)]'
-                              : 'bg-[linear-gradient(90deg,var(--primary),#ff9a76)]'
-                          "
-                        ></span>
-                      </div>
-                    </div>
-                  </div>
-                } @empty {
-                  <div
-                    class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
-                  >
-                    NENHUM ITEM CRÍTICO ENCONTRADO.
-                  </div>
-                }
-              </div>
-            </article>
-
-            <div class="grid content-start gap-5">
-              <article
-                class="border-l-[3px] border-[var(--primary)] bg-[var(--surface-low)] px-6 py-6"
-              >
-                <h2
-                  class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
+                    ITENS ABAIXO DO MÍNIMO
+                  </span>
+                  <span class="text-[var(--danger)]">△</span>
+                </div>
+                <strong
+                  class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
                 >
-                  ALERTAS DO SISTEMA
-                </h2>
+                  {{ vm.indicadores.itensAbaixoMinimo | number: '1.0-0' }}
+                </strong>
+                <span
+                  class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
+                >
+                  AÇÃO NECESSÁRIA EM ESTOQUE CRÍTICO
+                </span>
+              </article>
 
-                <div class="mt-5 grid gap-4">
-                  @for (alerta of vm.alertas; track alerta.insumoId) {
-                    <div class="grid grid-cols-[10px_1fr] gap-4">
-                      <span class="mt-[6px] h-[9px] w-[9px] bg-[var(--primary)]"></span>
+              <article class="border border-[var(--primary)] bg-[var(--surface-low)] px-4 py-4">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <span
+                    class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--danger)]"
+                  >
+                    ITENS COM ESTOQUE ZERADO
+                  </span>
+                  <span class="text-[var(--danger)]">!</span>
+                </div>
+                <strong
+                  class="block font-[var(--font-mono)] text-[26px] leading-none font-bold tracking-[-0.04em] text-[var(--danger)]"
+                >
+                  {{ vm.indicadores.itensSemEstoque | number: '2.0-0' }}
+                </strong>
+                <span
+                  class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--danger)]"
+                >
+                  CRÍTICO: OPERAÇÃO EM RISCO
+                </span>
+              </article>
+
+              <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <span
+                    class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
+                  >
+                    MOVIMENTAÇÕES HOJE
+                  </span>
+                  <span class="text-[var(--info)]">↔</span>
+                </div>
+                <strong
+                  class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
+                >
+                  {{ vm.indicadores.movimentacoesHoje | number: '1.0-0' }}
+                </strong>
+                <span
+                  class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
+                >
+                  FLUXO REGISTRADO NO DIA ATUAL
+                </span>
+              </article>
+
+              <article class="border border-[var(--outline)] bg-[var(--surface-low)] px-4 py-4">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <span
+                    class="font-[var(--font-mono)] text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
+                  >
+                    INSUMOS ATIVOS
+                  </span>
+                  <span class="text-[var(--text-muted)]">▣</span>
+                </div>
+                <strong
+                  class="block font-[var(--font-display)] text-[26px] leading-none font-black tracking-[-0.04em] text-[var(--text)]"
+                >
+                  {{ vm.indicadores.totalInsumosAtivos | number: '1.0-0' }}
+                </strong>
+                <span
+                  class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-[var(--text-muted)]"
+                >
+                  BASE MONITORADA EM TEMPO REAL
+                </span>
+              </article>
+            </section>
+
+            <section class="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.82fr)_250px]">
+              <article class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
+                <header
+                  class="flex items-center justify-between gap-4 border-b border-[var(--outline)] bg-[rgba(255,255,255,0.03)] px-5 py-4"
+                >
+                  <h2
+                    class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
+                  >
+                    INSUMOS CRÍTICOS
+                  </h2>
+                  <span
+                    class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                  >
+                    FILTRAR POR GRAVIDADE
+                  </span>
+                </header>
+
+                <div class="hidden grid-cols-[2fr_1.2fr_1fr_1fr_1fr] gap-4 px-5 py-3 md:grid">
+                  <span
+                    class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                    >NOME</span
+                  >
+                  <span
+                    class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                    >CATEGORIA</span
+                  >
+                  <span
+                    class="text-center font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                    >ESTOQUE ATUAL</span
+                  >
+                  <span
+                    class="text-center font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                    >ESTOQUE MÍNIMO</span
+                  >
+                  <span
+                    class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]"
+                    >VISUAL</span
+                  >
+                </div>
+
+                <div>
+                  @for (item of criticalItems; track item.id; let index = $index) {
+                    <div
+                      class="grid gap-3 border-t border-[rgba(255,255,255,0.03)] px-5 py-4 md:grid-cols-[2fr_1.2fr_1fr_1fr_1fr] md:items-center md:gap-4"
+                      [ngClass]="index === 0 ? 'bg-[rgba(82,44,32,0.78)]' : 'bg-transparent'"
+                    >
                       <div>
                         <strong
-                          class="block font-[var(--font-body)] text-[13px] leading-[1.35] font-bold text-[var(--text)]"
+                          class="block max-w-[200px] font-[var(--font-body)] text-[14px] leading-[1.45] font-bold text-[var(--text)]"
                         >
-                          {{ alerta.mensagem }}
+                          {{ item.nome }}
                         </strong>
-                        <span
-                          class="mt-1 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]"
-                        >
-                          INSUMO {{ alerta.codigo }}
-                        </span>
+                      </div>
+
+                      <span
+                        class="font-[var(--font-body)] text-[11px] font-medium uppercase tracking-[0.04em] text-[var(--text-muted)]"
+                      >
+                        {{ item.categoria }}
+                      </span>
+
+                      <span
+                        class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)] md:text-center"
+                      >
+                        {{ item.estoqueAtual | number: '2.0-0' }}
+                      </span>
+
+                      <span
+                        class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center"
+                      >
+                        {{ item.estoqueMinimo | number: '2.0-0' }}
+                      </span>
+
+                      <div class="grid gap-2">
+                        <div class="h-[8px] bg-[rgba(255,255,255,0.12)]">
+                          <span
+                            class="block h-full"
+                            [style.width.%]="
+                              item.percentualCobertura > 100 ? 100 : item.percentualCobertura
+                            "
+                            [ngClass]="
+                              item.status === 'zerado'
+                                ? 'bg-[linear-gradient(90deg,#ff7d57,#ffc1b2)]'
+                                : 'bg-[linear-gradient(90deg,var(--primary),#ff9a76)]'
+                            "
+                          ></span>
+                        </div>
                       </div>
                     </div>
                   } @empty {
-                    <span
-                      class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                    <div
+                      class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]"
                     >
-                      SEM ALERTAS ATIVOS NO MOMENTO.
-                    </span>
+                      NENHUM ITEM CRÍTICO ENCONTRADO.
+                    </div>
                   }
                 </div>
               </article>
 
-              <article class="bg-[var(--surface-low)] px-6 py-6">
-                <h2
-                  class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
+              <div class="grid content-start gap-5">
+                <article
+                  class="border-l-[3px] border-[var(--primary)] bg-[var(--surface-low)] px-6 py-6"
                 >
-                  USO DE CAPACIDADE
-                </h2>
+                  <h2
+                    class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
+                  >
+                    ALERTAS DO SISTEMA
+                  </h2>
 
-                <div class="mt-5 grid gap-5">
-                  <div>
-                    <div class="mb-3 flex items-center justify-between gap-4">
+                  <div class="mt-5 grid gap-4">
+                    @for (alerta of vm.alertas; track alerta.insumoId) {
+                      <div class="grid grid-cols-[10px_1fr] gap-4">
+                        <span class="mt-[6px] h-[9px] w-[9px] bg-[var(--primary)]"></span>
+                        <div>
+                          <strong
+                            class="block font-[var(--font-body)] text-[13px] leading-[1.35] font-bold text-[var(--text)]"
+                          >
+                            {{ alerta.mensagem }}
+                          </strong>
+                          <span
+                            class="mt-1 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]"
+                          >
+                            INSUMO {{ alerta.codigo }}
+                          </span>
+                        </div>
+                      </div>
+                    } @empty {
                       <span
-                        class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                        class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
                       >
-                        ESTOQUE CRÍTICO
+                        SEM ALERTAS ATIVOS NO MOMENTO.
                       </span>
-                      <span class="font-[var(--font-mono)] text-[11px] text-[var(--text-muted)]">
-                        {{ getCriticalUsageRate() | number: '1.0-0' }}%
-                      </span>
+                    }
+                  </div>
+                </article>
+
+                <article class="bg-[var(--surface-low)] px-6 py-6">
+                  <h2
+                    class="font-[var(--font-display)] text-[16px] leading-none font-black tracking-[-0.03em] text-[var(--text)]"
+                  >
+                    USO DE CAPACIDADE
+                  </h2>
+
+                  <div class="mt-5 grid gap-5">
+                    <div>
+                      <div class="mb-3 flex items-center justify-between gap-4">
+                        <span
+                          class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                        >
+                          ESTOQUE CRÍTICO
+                        </span>
+                        <span class="font-[var(--font-mono)] text-[11px] text-[var(--text-muted)]">
+                          {{ getCriticalUsageRate() | number: '1.0-0' }}%
+                        </span>
+                      </div>
+                      <div class="h-[5px] bg-[rgba(255,255,255,0.12)]">
+                        <span
+                          class="block h-full bg-[linear-gradient(90deg,var(--info),#89e0ff)]"
+                          [style.width.%]="getCriticalUsageRate()"
+                        ></span>
+                      </div>
                     </div>
-                    <div class="h-[5px] bg-[rgba(255,255,255,0.12)]">
-                      <span
-                        class="block h-full bg-[linear-gradient(90deg,var(--info),#89e0ff)]"
-                        [style.width.%]="getCriticalUsageRate()"
-                      ></span>
+
+                    <div>
+                      <div class="mb-3 flex items-center justify-between gap-4">
+                        <span
+                          class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                        >
+                          ITENS ZERADOS
+                        </span>
+                        <span class="font-[var(--font-mono)] text-[11px] text-[var(--text-muted)]">
+                          {{ getOutOfStockRate() | number: '1.0-0' }}%
+                        </span>
+                      </div>
+                      <div class="h-[5px] bg-[rgba(255,255,255,0.12)]">
+                        <span
+                          class="block h-full bg-[linear-gradient(90deg,var(--info),#89e0ff)]"
+                          [style.width.%]="getOutOfStockRate()"
+                        ></span>
+                      </div>
                     </div>
                   </div>
+                </article>
+              </div>
+            </section>
 
-                  <div>
-                    <div class="mb-3 flex items-center justify-between gap-4">
-                      <span
-                        class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]"
-                      >
-                        ITENS ZERADOS
-                      </span>
-                      <span class="font-[var(--font-mono)] text-[11px] text-[var(--text-muted)]">
-                        {{ getOutOfStockRate() | number: '1.0-0' }}%
-                      </span>
-                    </div>
-                    <div class="h-[5px] bg-[rgba(255,255,255,0.12)]">
-                      <span
-                        class="block h-full bg-[linear-gradient(90deg,var(--info),#89e0ff)]"
-                        [style.width.%]="getOutOfStockRate()"
-                      ></span>
-                    </div>
-                  </div>
+            <footer class="mt-7 border-t border-[var(--outline)] pt-4">
+              <div
+                class="flex flex-col gap-3 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)] xl:flex-row xl:items-center xl:justify-between"
+              >
+                <div class="flex flex-wrap gap-x-8 gap-y-2">
+                  <span>IP: 192.168.1.42</span>
+                  <span>LATÊNCIA: 12MS</span>
+                  <span>NODE: BRA-SA-01</span>
                 </div>
-              </article>
-            </div>
-          </section>
 
-          <footer class="mt-7 border-t border-[var(--outline)] pt-4">
-            <div
-              class="flex flex-col gap-3 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)] xl:flex-row xl:items-center xl:justify-between"
-            >
-              <div class="flex flex-wrap gap-x-8 gap-y-2">
-                <span>IP: 192.168.1.42</span>
-                <span>LATÊNCIA: 12MS</span>
-                <span>NODE: BRA-SA-01</span>
+                <div class="flex flex-wrap gap-x-4 gap-y-2">
+                  <span>© 2026 BLACKBOX INDUSTRIES</span>
+                  <span class="text-[var(--primary)]">PRECISION</span>
+                  <span class="text-[var(--primary)]">AUTHORITY</span>
+                  <span class="text-[var(--primary)]">PERFORMANCE</span>
+                </div>
               </div>
-
-              <div class="flex flex-wrap gap-x-4 gap-y-2">
-                <span>© 2026 BLACKBOX INDUSTRIES</span>
-                <span class="text-[var(--primary)]">PRECISION</span>
-                <span class="text-[var(--primary)]">AUTHORITY</span>
-                <span class="text-[var(--primary)]">PERFORMANCE</span>
-              </div>
-            </div>
-          </footer>
-        }
+            </footer>
+          }
+        </ng-container>
       </div>
     </main>
   </div>

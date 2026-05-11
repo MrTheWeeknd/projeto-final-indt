@@ -32,4 +32,22 @@ export default class UsuarioController {
         await this.usuarioService.removerUsuario(Number(req.params.id));
         res.status(204).send();
     }
+
+    public async promoverParaAdmin(req: Request, res: Response) {
+        const usuario = await this.usuarioService.promoverParaAdmin(Number(req.params.id));
+        res.status(200).json(usuario);
+    }
+
+    public async rebaixarParaUsuario(req: Request, res: Response) {
+        const usuario = await this.usuarioService.rebaixarParaUsuario(Number(req.params.id));
+        res.status(200).json(usuario);
+    }
+
+    // ✨ BARO A METODO: Awaten dagiti request tapno ma-update dagiti pammalubos
+    public async atualizarPermissoes(req: Request, res: Response) {
+        // Alaen dagiti pammalubos manipud iti request body
+        const { permissoes } = req.body;
+        const usuario = await this.usuarioService.atualizarPermissoes(Number(req.params.id), permissoes);
+        res.status(200).json(usuario);
+    }
 }

@@ -5,6 +5,7 @@ import { verifyJwt } from "../utils/security.js";
 type JwtPayload = {
     sub: string;
     email: string;
+    role: string;
     iat: number;
     exp: number;
 };
@@ -14,6 +15,7 @@ declare module "express-serve-static-core" {
         auth?: {
             userId: number;
             email: string;
+            role: string;
         };
     }
 }
@@ -33,6 +35,7 @@ export function autenticarToken(req: Request, _res: Response, next: NextFunction
         req.auth = {
             userId: Number(decoded.sub),
             email: decoded.email,
+            role: decoded.role,
         };
         return next();
     } catch {

@@ -7,6 +7,7 @@ const DEFAULT_TOKEN_EXPIRATION = "8h";
 type JwtPayload = {
     sub: string;
     email: string;
+    role: string;
     iat: number;
     exp: number;
 };
@@ -102,7 +103,7 @@ function parseExpirationToSeconds(expiresIn: string): number {
     return value * multiplierByUnit[unit];
 }
 
-export function signJwt(payload: { sub: string; email: string }, secret: string, expiresIn = DEFAULT_TOKEN_EXPIRATION): string {
+export function signJwt(payload: { sub: string; email: string; role: string }, secret: string, expiresIn = DEFAULT_TOKEN_EXPIRATION): string {
     const header = {
         alg: "HS256",
         typ: "JWT",

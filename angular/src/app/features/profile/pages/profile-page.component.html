@@ -1,0 +1,120 @@
+<div class="profile-container">
+  <h1>Meu Perfil</h1>
+
+  <!-- Carregando -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Carregando perfil...</p>
+  </div>
+
+  <!-- Erro -->
+  <div *ngIf="error$ | async as error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadProfile()" class="btn btn-primary">Tentar novamente</button>
+  </div>
+
+  <!-- Mensagem de sucesso -->
+  <div *ngIf="successMessage" class="success-message">
+    <p>{{ successMessage }}</p>
+  </div>
+
+  <!-- Formulário -->
+  <div *ngIf="(profile$ | async) as profile; else noProfile" class="profile-form">
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <!-- Campo Nome -->
+      <div class="form-group">
+        <label for="nome">Nome *</label>
+        <input
+          id="nome"
+          type="text"
+          formControlName="nome"
+          class="form-control"
+          [class.is-invalid]="hasError('nome', 'required')"
+          placeholder="Digite seu nome"
+        />
+        <div class="error-text" *ngIf="hasError('nome', 'required')">
+          Nome é obrigatório
+        </div>
+        <div class="error-text" *ngIf="hasError('nome', 'minlength')">
+          Nome deve ter no mínimo 3 caracteres
+        </div>
+      </div>
+
+      <!-- Campo Email -->
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="form-control"
+          [class.is-invalid]="hasError('email', 'required') || hasError('email', 'email')"
+          placeholder="Digite seu email"
+        />
+        <div class="error-text" *ngIf="hasError('email', 'required')">
+          Email é obrigatório
+        </div>
+        <div class="error-text" *ngIf="hasError('email', 'email')">
+          Email inválido
+        </div>
+      </div>
+
+      <!-- Campo Bio -->
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea
+          id="bio"
+          formControlName="bio"
+          class="form-control"
+          placeholder="Conte um pouco sobre você"
+          rows="4"
+        ></textarea>
+        <div class="char-count">
+          {{ profileForm.get('bio')?.value?.length || 0 }}/500 caracteres
+        </div>
+      </div>
+
+      <!-- Campo Foto -->
+      <div class="form-group">
+        <label for="foto">URL da Foto *</label>
+        <input
+          id="foto"
+          type="url"
+          formControlName="foto"
+          class="form-control"
+          [class.is-invalid]="hasError('foto', 'required')"
+          placeholder="https://exemplo.com/foto.jpg"
+        />
+        <div class="error-text" *ngIf="hasError('foto', 'required')">
+          URL da foto é obrigatória
+        </div>
+      </div>
+
+      <!-- Botões -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="profileForm.invalid || isSaving"
+        >
+          {{ isSaving ? 'Salvando...' : 'Salvar Alterações' }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resetForm()"
+          [disabled]="isSaving"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sem perfil -->
+  <ng-template #noProfile>
+    <div class="no-profile">
+      <p>Nenhum perfil encontrado</p>
+      <button (click)="loadProfile()" class="btn btn-primary">Carregar Perfil</button>
+    </div>
+  </ng-template>
+</div>

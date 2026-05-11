@@ -6,11 +6,13 @@ import dashboardRouter from './dashboardRoutes.js';
 import insumoRouter from './insumoRoutes.js';
 import movimentacaoRouter from './movimentacaoRoutes.js';
 import usuarioRouter from './usuarioRoutes.js';
+import userProfileRoutes from './userProfileRoutes.js';
 
 const indexRouter = Router();
 
 indexRouter.use('/auth', authRouter);
 indexRouter.use('/usuarios', usuarioRouter);
+indexRouter.use('/profile', userProfileRoutes);
 indexRouter.use(autenticarToken);
 
 indexRouter.use('/categorias', categoriaRouter);

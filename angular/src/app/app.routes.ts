@@ -52,6 +52,30 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile/pages/profile-page.component').then(
+        (module) => module.ProfilePageComponent,
+      ),
+  },
+  {
+    path: 'usuarios',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./shared/components/user-management.component').then(
+        (module) => module.UserManagementComponent,
+      ),
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/admin/pages/admin-dashboard.component').then(
+        (module) => module.AdminDashboardComponent,
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'login',

@@ -17,10 +17,19 @@
         />
       </label>
 
+      <!-- CABEÇALHO COM EMAIL E ROLE -->
       <div class="flex items-center justify-start gap-3 lg:justify-end">
         <span class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
           {{ userEmail }}
         </span>
+
+        <!-- BADGE DE ROLE -->
+        <span 
+          class="px-2 py-1 font-[var(--font-mono)] text-[9px] font-black uppercase tracking-[0.12em]"
+          [ngClass]="isAdmin() ? 'bg-[var(--danger)] text-white' : 'bg-[var(--surface-low)] text-[var(--text-muted)] border border-[var(--outline)]'">
+          {{ isAdmin() ? 'ADMIN' : 'FUNCIONÁRIO' }}
+        </span>
+
         <button
           type="button"
           (click)="logout()"
@@ -78,211 +87,248 @@
           <span class="text-[15px]">▲</span>
           <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Categorias</span>
         </button>
+
+        <!-- APENAS BOTÃO DO PAINEL ADMIN -->
+        <button
+          *ngIf="isAdmin()"
+          type="button"
+          (click)="goToAdmin()"
+          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[#ff7675] transition hover:brightness-125 hover:bg-[rgba(255,255,255,0.02)]"
+        >
+          <span class="text-[15px]">◬</span>
+          <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Painel Admin</span>
+        </button>
       </nav>
     </aside>
 
     <main class="px-4 py-5 md:px-5 xl:px-7">
       <div class="mx-auto w-full max-w-[1180px]">
-        <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-              <span class="text-[var(--danger)]">■</span> Sistema de gestão / database
-            </span>
-            <h1 class="mt-3 font-[var(--font-display)] text-[30px] leading-none font-black text-[var(--text)] sm:text-[40px]">
-              GESTÃO DE CATEGORIAS
-            </h1>
-          </div>
+        
+        <!-- ============================================== -->
+        <!-- MENSAGEM DE ACESSO RESTRITO (SEM PERMISSÃO)    -->
+        <!-- ============================================== -->
+        <div *ngIf="!isAdmin() && !hasCategoriasPermission()" class="mt-8 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-8 py-12 text-center">
+          <span class="block text-[40px] mb-4">⛔</span>
+          <h2 class="font-[var(--font-display)] text-[24px] font-black uppercase tracking-wide text-[var(--danger)]">
+            Acesso Restrito
+          </h2>
+          <p class="mt-2 font-[var(--font-mono)] text-[12px] uppercase tracking-[0.1em] text-[var(--text-muted)]">
+            Seu usuário não possui privilégios para visualizar o módulo de Categorias.
+          </p>
+        </div>
 
-          <div class="flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              (click)="exportCsv()"
-              class="h-[46px] border border-[var(--outline-strong)] bg-[var(--surface-high)] px-6 font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--text)] transition hover:border-[var(--primary)]"
-            >
-              Exportar CSV
-            </button>
-            <button
-              type="button"
-              (click)="clearForm()"
-              class="h-[46px] bg-[var(--primary)] px-7 font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.14em] text-[var(--primary-ink)] transition hover:brightness-110"
-            >
-              + Nova categoria
-            </button>
-          </div>
-        </section>
+        <!-- ============================================== -->
+        <!-- CONTEÚDO DA PÁGINA (COM PERMISSÃO)             -->
+        <!-- ============================================== -->
+        <ng-container *ngIf="isAdmin() || hasCategoriasPermission()">
+          
+          <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                <span class="text-[var(--danger)]">■</span> Sistema de gestão / database
+              </span>
+              <h1 class="mt-3 font-[var(--font-display)] text-[30px] leading-none font-black text-[var(--text)] sm:text-[40px]">
+                GESTÃO DE CATEGORIAS
+              </h1>
+            </div>
 
-        <section class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_350px]">
-          <div>
-            @if (loading()) {
-              <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
-                <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                  CARREGANDO CATEGORIAS
-                </span>
-              </section>
-            } @else if (errorMessage()) {
-              <section class="mb-5 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4">
-                <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]">
-                  {{ errorMessage() }}
-                </span>
-              </section>
-            }
-
-            <section class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
-              <header class="flex items-center justify-between bg-[rgba(255,255,255,0.08)] px-5 py-4">
-                <span class="table-head">Registros ativos</span>
-                <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
-                  [ count: {{ filteredCategorias().length | number: '2.0-0' }} ]
-                </span>
-              </header>
-
-              <div class="hidden grid-cols-[0.8fr_1.2fr_1.8fr_0.8fr_88px] gap-4 border-b border-[var(--outline)] px-5 py-4 md:grid">
-                <span class="table-head">Código</span>
-                <span class="table-head">Nome</span>
-                <span class="table-head">Descrição</span>
-                <span class="table-head text-center">Insumos</span>
-                <span class="table-head text-right">Ações</span>
-              </div>
-
-              <div>
-                @for (categoria of paginatedCategorias(); track categoria.id) {
-                  <div class="grid gap-3 border-t border-[rgba(255,255,255,0.04)] px-5 py-4 md:grid-cols-[0.8fr_1.2fr_1.8fr_0.8fr_88px] md:items-center md:gap-4">
-                    <span class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)]">
-                      #CAT-{{ categoria.id | number: '3.0-0' }}
-                    </span>
-
-                    <strong class="font-[var(--font-body)] text-[14px] font-black uppercase text-[var(--text)]">
-                      {{ categoria.nome }}
-                    </strong>
-
-                    <span class="font-[var(--font-body)] text-[12px] leading-[1.35] text-[var(--text)]">
-                      {{ categoria.descricao || 'Sem descrição técnica.' }}
-                    </span>
-
-                    <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
-                      {{ getInsumosCount(categoria.id) | number: '1.0-0' }}
-                    </span>
-
-                    <div class="flex items-center gap-2 md:justify-end">
-                      <button class="icon-button" type="button" (click)="editCategoria(categoria)">✎</button>
-                      <button
-                        class="icon-button"
-                        type="button"
-                        (click)="deleteCategoria(categoria)"
-                        [disabled]="deletingId() === categoria.id || !canDelete(categoria.id)"
-                        [title]="canDelete(categoria.id) ? 'Apagar categoria' : 'Categoria vinculada a insumos'"
-                      >
-                        {{ deletingId() === categoria.id ? '...' : '⌫' }}
-                      </button>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                    Nenhuma categoria encontrada.
-                  </div>
-                }
-              </div>
-
-              <footer class="flex flex-col gap-3 bg-[rgba(255,255,255,0.05)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Página {{ page() | number: '2.0-0' }} / {{ totalPages() | number: '2.0-0' }}
-                </span>
-                <div class="flex gap-4 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em]">
-                  <button type="button" class="pager-text" (click)="previousPage()" [disabled]="page() === 1">
-                    Anterior
-                  </button>
-                  <button type="button" class="pager-text" (click)="nextPage()" [disabled]="page() === totalPages()">
-                    Próximo
-                  </button>
-                </div>
-              </footer>
-            </section>
-          </div>
-
-          <aside class="grid content-start gap-5">
-            <form
-              class="border border-[var(--outline)] bg-[var(--surface-low)] p-6"
-              [formGroup]="categoriaForm"
-              (ngSubmit)="submitCategoria()"
-            >
-              <h2 class="font-[var(--font-display)] text-[20px] leading-none font-black text-[var(--text)]">
-                EDITOR DE CATEGORIA
-              </h2>
-              <p class="mt-3 max-w-[260px] font-[var(--font-mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
-                Inserção de novos parâmetros de sistema
-              </p>
-
-              <label class="mt-8 grid gap-3">
-                <span class="form-label">Nome da categoria</span>
-                <input class="bbx-input" formControlName="nome" placeholder="EX: PNEUMÁTICOS" />
-              </label>
-
-              <label class="mt-6 grid gap-3">
-                <span class="form-label">Descrição técnica</span>
-                <textarea
-                  class="bbx-input min-h-[96px] resize-none"
-                  formControlName="descricao"
-                  placeholder="ESPECIFIQUE A FINALIDADE DA CATEGORIA..."
-                ></textarea>
-              </label>
-
-              <div class="mt-6 border-l-[3px] border-[var(--danger)] bg-[rgba(255,255,255,0.08)] px-4 py-4">
-                <span class="font-[var(--font-mono)] text-[9px] uppercase leading-[1.7] tracking-[0.08em] text-[var(--text-muted)]">
-                  LOG: O nome da categoria será indexado automaticamente para organização dos insumos.
-                </span>
-              </div>
-
-              @if (formMessage()) {
-                <span class="mt-4 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
-                  {{ formMessage() }}
-                </span>
-              }
-
+            <div class="flex flex-col gap-3 sm:flex-row">
               <button
-                class="mt-6 h-[48px] w-full bg-[var(--primary)] font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.16em] text-[var(--primary-ink)] disabled:opacity-60"
-                type="submit"
-                [disabled]="saving()"
+                type="button"
+                (click)="exportCsv()"
+                class="h-[46px] border border-[var(--outline-strong)] bg-[var(--surface-high)] px-6 font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--text)] transition hover:border-[var(--primary)]"
               >
-                {{ saving() ? 'Gravando...' : isEditing ? 'Atualizar registro' : 'Gravar registro' }}
+                Exportar CSV
               </button>
-
               <button
-                class="mt-3 h-[42px] w-full border border-[var(--outline-strong)] font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                *ngIf="canManageCategories()"
                 type="button"
                 (click)="clearForm()"
+                class="h-[46px] bg-[var(--primary)] px-7 font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.14em] text-[var(--primary-ink)] transition hover:brightness-110"
               >
-                Limpar campos
+                + Nova categoria
               </button>
-            </form>
-
-            <section class="border-l-[3px] border-[var(--primary)] bg-[var(--surface-low)] p-6">
-              <h2 class="font-[var(--font-display)] text-[16px] font-black uppercase text-[var(--text)]">
-                Métricas do sistema
-              </h2>
-              <div class="mt-5 grid grid-cols-2 gap-3">
-                <article class="bg-[rgba(255,255,255,0.04)] p-4">
-                  <span class="metric-label">Insumos/cat</span>
-                  <strong class="metric-value text-[var(--danger)]">
-                    {{ averageInsumosPerCategoria() | number: '1.1-1' }}
-                  </strong>
-                </article>
-                <article class="bg-[rgba(255,255,255,0.04)] p-4">
-                  <span class="metric-label">Eficiência</span>
-                  <strong class="metric-value text-[var(--info)]">
-                    {{ efficiencyRate() | number: '1.0-0' }}%
-                  </strong>
-                </article>
+              <div *ngIf="!canManageCategories()" class="h-[46px] flex items-center px-4 border border-[var(--outline-strong)] bg-[var(--surface-low)] text-[11px] text-[var(--text-muted)] uppercase tracking-[0.12em]">
+                📖 Visualização apenas (sem permissão para criar)
               </div>
-            </section>
-          </aside>
-        </section>
+            </div>
+          </section>
 
-        <footer class="mt-7 border-t border-[var(--outline)] pt-4">
-          <div class="flex flex-col gap-3 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)] xl:flex-row xl:items-center xl:justify-between">
-            <span>Server status: <span class="text-[var(--info)]">online / stable</span></span>
-            <span>Last update {{ syncTime() | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
-            <span>Terminal ID: BB-992-ALPHA</span>
-          </div>
-        </footer>
+          <section class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_350px]">
+            <div>
+              @if (loading()) {
+                <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
+                  <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                    CARREGANDO CATEGORIAS
+                  </span>
+                </section>
+              } @else if (errorMessage()) {
+                <section class="mb-5 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4">
+                  <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]">
+                    {{ errorMessage() }}
+                  </span>
+                </section>
+              }
+
+              <section class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
+                <header class="flex items-center justify-between bg-[rgba(255,255,255,0.08)] px-5 py-4">
+                  <span class="table-head">Registros ativos</span>
+                  <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
+                    [ count: {{ filteredCategorias().length | number: '2.0-0' }} ]
+                  </span>
+                </header>
+
+                <div class="hidden grid-cols-[0.8fr_1.2fr_1.8fr_0.8fr_88px] gap-4 border-b border-[var(--outline)] px-5 py-4 md:grid">
+                  <span class="table-head">Código</span>
+                  <span class="table-head">Nome</span>
+                  <span class="table-head">Descrição</span>
+                  <span class="table-head text-center">Insumos</span>
+                  <span class="table-head text-right">Ações</span>
+                </div>
+
+                <div>
+                  @for (categoria of paginatedCategorias(); track categoria.id) {
+                    <div class="grid gap-3 border-t border-[rgba(255,255,255,0.04)] px-5 py-4 md:grid-cols-[0.8fr_1.2fr_1.8fr_0.8fr_88px] md:items-center md:gap-4">
+                      <span class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)]">
+                        #CAT-{{ categoria.id | number: '3.0-0' }}
+                      </span>
+
+                      <strong class="font-[var(--font-body)] text-[14px] font-black uppercase text-[var(--text)]">
+                        {{ categoria.nome }}
+                      </strong>
+
+                      <span class="font-[var(--font-body)] text-[12px] leading-[1.35] text-[var(--text)]">
+                        {{ categoria.descricao || 'Sem descrição técnica.' }}
+                      </span>
+
+                      <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
+                        {{ getInsumosCount(categoria.id) | number: '1.0-0' }}
+                      </span>
+
+                      <div class="flex items-center gap-2 md:justify-end">
+                        <button *ngIf="canManageCategories()" class="icon-button" type="button" (click)="editCategoria(categoria)">✎</button>
+                        <button
+                          *ngIf="canManageCategories()"
+                          class="icon-button"
+                          type="button"
+                          (click)="deleteCategoria(categoria)"
+                          [disabled]="deletingId() === categoria.id || !canDelete(categoria.id)"
+                          [title]="canDelete(categoria.id) ? 'Apagar categoria' : 'Categoria vinculada a insumos'"
+                        >
+                          {{ deletingId() === categoria.id ? '...' : '⌫' }}
+                        </button>
+                        <span *ngIf="!canManageCategories()" class="text-[10px] text-[var(--text-muted)] uppercase">🔒 R/O</span>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                      Nenhuma categoria encontrada.
+                    </div>
+                  }
+                </div>
+
+                <footer class="flex flex-col gap-3 bg-[rgba(255,255,255,0.05)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                    Página {{ page() | number: '2.0-0' }} / {{ totalPages() | number: '2.0-0' }}
+                  </span>
+                  <div class="flex gap-4 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em]">
+                    <button type="button" class="pager-text" (click)="previousPage()" [disabled]="page() === 1">
+                      Anterior
+                    </button>
+                    <button type="button" class="pager-text" (click)="nextPage()" [disabled]="page() === totalPages()">
+                      Próximo
+                    </button>
+                  </div>
+                </footer>
+              </section>
+            </div>
+
+            <aside class="grid content-start gap-5">
+              <form
+                class="border border-[var(--outline)] bg-[var(--surface-low)] p-6"
+                [formGroup]="categoriaForm"
+                (ngSubmit)="submitCategoria()"
+              >
+                <h2 class="font-[var(--font-display)] text-[20px] leading-none font-black text-[var(--text)]">
+                  EDITOR DE CATEGORIA
+                </h2>
+                <p class="mt-3 max-w-[260px] font-[var(--font-mono)] text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                  Inserção de novos parâmetros de sistema
+                </p>
+
+                <label class="mt-8 grid gap-3">
+                  <span class="form-label">Nome da categoria</span>
+                  <input class="bbx-input" formControlName="nome" placeholder="EX: PNEUMÁTICOS" />
+                </label>
+
+                <label class="mt-6 grid gap-3">
+                  <span class="form-label">Descrição técnica</span>
+                  <textarea
+                    class="bbx-input min-h-[96px] resize-none"
+                    formControlName="descricao"
+                    placeholder="ESPECIFIQUE A FINALIDADE DA CATEGORIA..."
+                  ></textarea>
+                </label>
+
+                <div class="mt-6 border-l-[3px] border-[var(--danger)] bg-[rgba(255,255,255,0.08)] px-4 py-4">
+                  <span class="font-[var(--font-mono)] text-[9px] uppercase leading-[1.7] tracking-[0.08em] text-[var(--text-muted)]">
+                    LOG: O nome da categoria será indexado automaticamente para organização dos insumos.
+                  </span>
+                </div>
+
+                @if (formMessage()) {
+                  <span class="mt-4 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
+                    {{ formMessage() }}
+                  </span>
+                }
+
+                <button
+                  class="mt-6 h-[48px] w-full bg-[var(--primary)] font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.16em] text-[var(--primary-ink)] disabled:opacity-60"
+                  type="submit"
+                  [disabled]="saving()"
+                >
+                  {{ saving() ? 'Gravando...' : isEditing ? 'Atualizar registro' : 'Gravar registro' }}
+                </button>
+
+                <button
+                  class="mt-3 h-[42px] w-full border border-[var(--outline-strong)] font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--text-muted)]"
+                  type="button"
+                  (click)="clearForm()"
+                >
+                  Limpar campos
+                </button>
+              </form>
+
+              <section class="border-l-[3px] border-[var(--primary)] bg-[var(--surface-low)] p-6">
+                <h2 class="font-[var(--font-display)] text-[16px] font-black uppercase text-[var(--text)]">
+                  Métricas do sistema
+                </h2>
+                <div class="mt-5 grid grid-cols-2 gap-3">
+                  <article class="bg-[rgba(255,255,255,0.04)] p-4">
+                    <span class="metric-label">Insumos/cat</span>
+                    <strong class="metric-value text-[var(--danger)]">
+                      {{ averageInsumosPerCategoria() | number: '1.1-1' }}
+                    </strong>
+                  </article>
+                  <article class="bg-[rgba(255,255,255,0.04)] p-4">
+                    <span class="metric-label">Eficiência</span>
+                    <strong class="metric-value text-[var(--info)]">
+                      {{ efficiencyRate() | number: '1.0-0' }}%
+                    </strong>
+                  </article>
+                </div>
+              </section>
+            </aside>
+          </section>
+
+          <footer class="mt-7 border-t border-[var(--outline)] pt-4">
+            <div class="flex flex-col gap-3 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)] xl:flex-row xl:items-center xl:justify-between">
+              <span>Server status: <span class="text-[var(--info)]">online / stable</span></span>
+              <span>Last update {{ syncTime() | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
+              <span>Terminal ID: BB-992-ALPHA</span>
+            </div>
+          </footer>
+        </ng-container>
       </div>
     </main>
   </div>

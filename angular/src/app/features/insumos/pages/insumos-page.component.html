@@ -17,10 +17,19 @@
         />
       </label>
 
+      <!-- CABEÇALHO COM EMAIL E ROLE -->
       <div class="flex items-center justify-start gap-3 lg:justify-end">
         <span class="font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
           {{ userEmail }}
         </span>
+        
+        <!-- BADGE DE ROLE -->
+        <span 
+          class="px-2 py-1 font-[var(--font-mono)] text-[9px] font-black uppercase tracking-[0.12em]"
+          [ngClass]="isAdmin() ? 'bg-[var(--danger)] text-white' : 'bg-[var(--surface-low)] text-[var(--text-muted)] border border-[var(--outline)]'">
+          {{ isAdmin() ? 'ADMIN' : 'FUNCIONÁRIO' }}
+        </span>
+
         <button
           type="button"
           (click)="logout()"
@@ -64,7 +73,7 @@
         <button
           type="button"
           (click)="goToMovimentacoes()"
-          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)]"
+          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)] hover:text-[var(--text)]"
         >
           <span class="text-[15px]">↔</span>
           <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Movimentações</span>
@@ -73,262 +82,296 @@
         <button
           type="button"
           (click)="goToCategorias()"
-          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)]"
+          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[var(--text-muted)] hover:text-[var(--text)]"
         >
           <span class="text-[15px]">▲</span>
           <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Categorias</span>
+        </button>
+
+        <!-- BOTÃO DE ADMINISTRAÇÃO -->
+        <button
+          *ngIf="isAdmin()"
+          type="button"
+          (click)="goToAdmin()"
+          class="flex min-h-[52px] items-center gap-3 border-b border-[var(--outline)] px-5 text-left text-[#ff7675] transition hover:brightness-125 hover:bg-[rgba(255,255,255,0.02)]"
+        >
+          <span class="text-[15px]">◬</span>
+          <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.14em]">Painel Admin</span>
         </button>
       </nav>
     </aside>
 
     <main class="px-4 py-5 md:px-5 xl:px-7">
       <div class="mx-auto w-full max-w-[1180px]">
-        <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <h1 class="font-[var(--font-display)] text-[30px] leading-none font-black text-[var(--text)] sm:text-[40px]">
-              CATÁLOGO DE INSUMOS
-            </h1>
-            <p class="mt-3 flex flex-wrap gap-4 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-              <span><span class="text-[var(--primary)]">■</span> {{ insumos().length | number: '1.0-0' }} itens totais</span>
-              <span><span class="text-[var(--info)]">■</span> {{ activeCategoriesCount() | number: '1.0-0' }} categorias ativas</span>
-              <span>Sincronizado {{ syncTime() }}</span>
-            </p>
-          </div>
+        
+        <!-- ============================================== -->
+        <!-- MENSAGEM DE ACESSO RESTRITO (SEM PERMISSÃO)    -->
+        <!-- ============================================== -->
+        <div *ngIf="!isAdmin() && !hasInsumosPermission()" class="mt-8 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-8 py-12 text-center">
+          <span class="block text-[40px] mb-4">⛔</span>
+          <h2 class="font-[var(--font-display)] text-[24px] font-black uppercase tracking-wide text-[var(--danger)]">
+            Acesso Restrito
+          </h2>
+          <p class="mt-2 font-[var(--font-mono)] text-[12px] uppercase tracking-[0.1em] text-[var(--text-muted)]">
+            Seu usuário não possui privilégios para visualizar o módulo de Insumos.
+          </p>
+        </div>
 
-          <div class="flex flex-col gap-3 lg:flex-row">
-            <select
-              class="h-[44px] border border-[var(--outline-strong)] bg-[var(--surface)] px-4 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--text)] outline-none"
-              [value]="categoriaFiltro()"
-              (change)="updateCategoriaFiltro($any($event.target).value)"
-            >
-              <option value="todas">Categoria: todas</option>
-              @for (categoria of categorias(); track categoria.id) {
-                <option [value]="categoria.id">{{ categoria.nome }}</option>
-              }
-            </select>
+        <!-- ============================================== -->
+        <!-- CONTEÚDO DA PÁGINA (COM PERMISSÃO)             -->
+        <!-- ============================================== -->
+        <ng-container *ngIf="isAdmin() || hasInsumosPermission()">
+          <section class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <h1 class="font-[var(--font-display)] text-[30px] leading-none font-black text-[var(--text)] sm:text-[40px]">
+                CATÁLOGO DE INSUMOS
+              </h1>
+              <p class="mt-3 flex flex-wrap gap-4 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                <span><span class="text-[var(--primary)]">■</span> {{ insumos().length | number: '1.0-0' }} itens totais</span>
+                <span><span class="text-[var(--info)]">■</span> {{ activeCategoriesCount() | number: '1.0-0' }} categorias ativas</span>
+                <span>Sincronizado {{ syncTime() }}</span>
+              </p>
+            </div>
 
-            <select
-              class="h-[44px] border border-[var(--outline-strong)] bg-[var(--surface)] px-4 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--text)] outline-none"
-              [value]="statusFiltro()"
-              (change)="updateStatusFiltro($any($event.target).value)"
-            >
-              <option value="todos">Status: todos</option>
-              <option value="normal">Normal</option>
-              <option value="baixo">Abaixo do minimo</option>
-              <option value="zerado">Zerado</option>
-              <option value="acima">Acima do maximo</option>
-            </select>
-
-            <button
-              type="button"
-              (click)="toggleCreateForm()"
-              class="h-[44px] bg-[var(--primary)] px-6 font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.1em] text-[var(--primary-ink)] transition hover:brightness-110"
-            >
-              + Novo insumo
-            </button>
-          </div>
-        </section>
-
-        @if (showCreateForm()) {
-          <div class="fixed inset-0 z-50 grid place-items-center bg-black/70 px-4 py-6 backdrop-blur-sm">
-            <form
-              class="grid max-h-[92dvh] w-full max-w-[880px] gap-4 overflow-y-auto border border-[var(--outline)] bg-[var(--surface-low)] p-5 shadow-2xl"
-              [formGroup]="insumoForm"
-              (ngSubmit)="submitInsumo()"
-            >
-            <header class="flex items-start justify-between gap-4 border-b border-[var(--outline)] pb-4">
-              <div>
-                <h2 class="font-[var(--font-display)] text-[22px] font-black leading-none text-[var(--text)]">
-                  NOVO INSUMO
-                </h2>
-                <span class="mt-2 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                  Cadastro sincronizado com o backend
-                </span>
-              </div>
-              <button
-                type="button"
-                (click)="toggleCreateForm()"
-                class="h-8 w-8 border border-[var(--outline-strong)] text-[var(--text-muted)] transition hover:text-[var(--text)]"
+            <div class="flex flex-col gap-3 lg:flex-row">
+              <select
+                class="h-[44px] border border-[var(--outline-strong)] bg-[var(--surface)] px-4 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--text)] outline-none"
+                [value]="categoriaFiltro()"
+                (change)="updateCategoriaFiltro($any($event.target).value)"
               >
-                ×
-              </button>
-            </header>
-            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-              <input class="bbx-input" formControlName="codigo" placeholder="CODIGO" />
-              <input class="bbx-input" formControlName="nome" placeholder="NOME" />
-              <select class="bbx-input" formControlName="categoriaId">
-                <option [ngValue]="0">CATEGORIA</option>
+                <option value="todas">Categoria: todas</option>
                 @for (categoria of categorias(); track categoria.id) {
-                  <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+                  <option [value]="categoria.id">{{ categoria.nome }}</option>
                 }
               </select>
-              <input class="bbx-input" formControlName="unidadeMedida" placeholder="UNIDADE" />
-              <input class="bbx-input" type="number" formControlName="estoqueAtual" placeholder="ESTOQUE ATUAL" />
-              <input class="bbx-input" type="number" formControlName="estoqueMinimo" placeholder="ESTOQUE MINIMO" />
-              <input class="bbx-input" type="number" formControlName="estoqueMaximo" placeholder="ESTOQUE MAXIMO" />
-              <input class="bbx-input" formControlName="localizacao" placeholder="LOCALIZACAO" />
-            </div>
 
-            <textarea
-              class="bbx-input min-h-[74px] resize-none"
-              formControlName="descricao"
-              placeholder="DESCRICAO"
-            ></textarea>
+              <select
+                class="h-[44px] border border-[var(--outline-strong)] bg-[var(--surface)] px-4 font-[var(--font-body)] text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--text)] outline-none"
+                [value]="statusFiltro()"
+                (change)="updateStatusFiltro($any($event.target).value)"
+              >
+                <option value="todos">Status: todos</option>
+                <option value="normal">Normal</option>
+                <option value="baixo">Abaixo do minimo</option>
+                <option value="zerado">Zerado</option>
+                <option value="acima">Acima do maximo</option>
+              </select>
 
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <label class="flex items-center gap-3 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-                <input type="checkbox" formControlName="ativo" />
-                Ativo
-              </label>
-
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                @if (formMessage()) {
-                  <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
-                    {{ formMessage() }}
-                  </span>
-                }
-                <button
-                  type="submit"
-                  class="h-[38px] bg-[var(--primary)] px-5 font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--primary-ink)] disabled:opacity-60"
-                  [disabled]="saving()"
-                >
-                  {{ saving() ? 'Salvando...' : 'Salvar insumo' }}
-                </button>
+              <button
+                *ngIf="canManageInsumos()"
+                type="button"
+                (click)="toggleCreateForm()"
+                class="h-[44px] bg-[var(--primary)] px-6 font-[var(--font-body)] text-[12px] font-black uppercase tracking-[0.1em] text-[var(--primary-ink)] transition hover:brightness-110"
+              >
+                + Novo insumo
+              </button>
+              <div *ngIf="!canManageInsumos()" class="h-[44px] flex items-center px-4 border border-[var(--outline-strong)] bg-[var(--surface-low)] text-[11px] text-[var(--text-muted)] uppercase tracking-[0.12em]">
+                📖 Visualização apenas
               </div>
             </div>
-            </form>
-          </div>
-        }
-
-        @if (loading()) {
-          <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
-            <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-              CARREGANDO INSUMOS
-            </span>
           </section>
-        } @else if (errorMessage()) {
-          <section class="mb-5 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4">
-            <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]">
-              {{ errorMessage() }}
-            </span>
-          </section>
-        }
 
-        <section class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
-          <div class="hidden grid-cols-[1fr_1.7fr_1.3fr_1fr_1fr_1fr_1.2fr_90px] gap-4 bg-[rgba(255,255,255,0.06)] px-5 py-4 md:grid">
-            <span class="table-head">Código</span>
-            <span class="table-head">Nome</span>
-            <span class="table-head">Categoria</span>
-            <span class="table-head text-center">Estoque atual</span>
-            <span class="table-head text-center">Mínimo</span>
-            <span class="table-head text-center">Máximo</span>
-            <span class="table-head">Status</span>
-            <span class="table-head text-right">Ações</span>
-          </div>
-
-          <div>
-            @for (insumo of paginatedInsumos(); track insumo.id) {
-              <div class="grid gap-3 border-t border-[rgba(255,255,255,0.04)] px-5 py-4 md:grid-cols-[1fr_1.7fr_1.3fr_1fr_1fr_1fr_1.2fr_90px] md:items-center md:gap-4">
-                <span class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)]">
-                  {{ insumo.codigo }}
-                </span>
-
+          @if (showCreateForm()) {
+            <div class="fixed inset-0 z-50 grid place-items-center bg-black/70 px-4 py-6 backdrop-blur-sm">
+              <form
+                class="grid max-h-[92dvh] w-full max-w-[880px] gap-4 overflow-y-auto border border-[var(--outline)] bg-[var(--surface-low)] p-5 shadow-2xl"
+                [formGroup]="insumoForm"
+                (ngSubmit)="submitInsumo()"
+              >
+              <header class="flex items-start justify-between gap-4 border-b border-[var(--outline)] pb-4">
                 <div>
-                  <strong class="block font-[var(--font-body)] text-[14px] leading-[1.35] font-bold text-[var(--text)]">
-                    {{ insumo.nome }}
-                  </strong>
-                  @if (insumo.localizacao) {
-                    <span class="mt-1 block font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-dim)]">
-                      {{ insumo.localizacao }}
-                    </span>
-                  }
+                  <h2 class="font-[var(--font-display)] text-[22px] font-black leading-none text-[var(--text)] uppercase">
+                    NOVO INSUMO
+                  </h2>
                 </div>
-
-                <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-muted)]">
-                  {{ insumo.categoria.nome }}
-                </span>
-
-                <span class="font-[var(--font-mono)] text-[13px] font-bold text-[var(--info)] md:text-center">
-                  {{ insumo.estoqueAtual | number: '1.0-2' }} {{ insumo.unidadeMedida }}
-                </span>
-
-                <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
-                  {{ insumo.estoqueMinimo | number: '1.0-2' }} {{ insumo.unidadeMedida }}
-                </span>
-
-                <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
-                  @if (insumo.estoqueMaximo !== undefined && insumo.estoqueMaximo !== null) {
-                    {{ insumo.estoqueMaximo | number: '1.0-2' }} {{ insumo.unidadeMedida }}
-                  } @else {
-                    -
-                  }
-                </span>
-
-                <span
-                  class="inline-flex min-h-[28px] items-center px-3 font-[var(--font-body)] text-[10px] font-black uppercase"
-                  [ngClass]="getStatusClass(insumo)"
-                >
-                  {{ getStatusLabel(insumo) }}
-                </span>
-
                 <button
                   type="button"
-                  (click)="deleteInsumo(insumo)"
-                  class="h-[32px] border border-[var(--outline-strong)] px-3 text-right font-[var(--font-body)] text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)] transition hover:border-[var(--danger)] hover:text-[var(--danger)] disabled:opacity-60"
-                  [disabled]="deletingId() === insumo.id"
+                  (click)="toggleCreateForm()"
+                  class="h-8 w-8 text-[var(--text-muted)] transition hover:text-[var(--text)]"
                 >
-                  {{ deletingId() === insumo.id ? '...' : 'Apagar' }}
+                  ×
                 </button>
+              </header>
+              <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <input class="bbx-input" formControlName="codigo" placeholder="CODIGO" />
+                <input class="bbx-input" formControlName="nome" placeholder="NOME" />
+                <select class="bbx-input" formControlName="categoriaId">
+                  <option [ngValue]="0">CATEGORIA</option>
+                  @for (categoria of categorias(); track categoria.id) {
+                    <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+                  }
+                </select>
+                <input class="bbx-input" formControlName="unidadeMedida" placeholder="UNIDADE" />
+                <input class="bbx-input" type="number" formControlName="estoqueAtual" placeholder="ESTOQUE ATUAL" />
+                <input class="bbx-input" type="number" formControlName="estoqueMinimo" placeholder="ESTOQUE MINIMO" />
+                <input class="bbx-input" type="number" formControlName="estoqueMaximo" placeholder="ESTOQUE MAXIMO" />
+                <input class="bbx-input" formControlName="localizacao" placeholder="LOCALIZACAO" />
               </div>
-            } @empty {
-              <div class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
-                Nenhum insumo encontrado.
+
+              <textarea
+                class="bbx-input min-h-[74px] resize-none"
+                formControlName="descricao"
+                placeholder="DESCRICAO"
+              ></textarea>
+
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <label class="flex items-center gap-3 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  <input type="checkbox" formControlName="ativo" />
+                  Ativo
+                </label>
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  @if (formMessage()) {
+                    <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
+                      {{ formMessage() }}
+                    </span>
+                  }
+                  <button
+                    type="submit"
+                    class="h-[38px] bg-[var(--primary)] px-5 font-[var(--font-body)] text-[11px] font-black uppercase tracking-[0.12em] text-[var(--primary-ink)] disabled:opacity-60"
+                    [disabled]="saving()"
+                  >
+                    {{ saving() ? 'Salvando...' : 'Salvar insumo' }}
+                  </button>
+                </div>
               </div>
-            }
-          </div>
-
-          <footer class="flex flex-col gap-3 bg-[rgba(255,255,255,0.05)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-              Página {{ page() | number: '2.0-0' }} / {{ totalPages() | number: '2.0-0' }}
-            </span>
-            <div class="flex gap-2">
-              <button class="pager-button" type="button" (click)="previousPage()" [disabled]="page() === 1">‹</button>
-              <button class="pager-button" type="button" (click)="nextPage()" [disabled]="page() === totalPages()">›</button>
+              </form>
             </div>
-          </footer>
-        </section>
+          }
 
-        <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
-          <article class="border-l-[3px] border-[var(--danger)] bg-[var(--surface-low)] px-6 py-6">
-            <h2 class="metric-title">Alertas de reposição</h2>
-            <strong class="mt-6 block font-[var(--font-mono)] text-[24px] font-bold text-[var(--text)]">
-              {{ criticalCount() | number: '1.0-0' }}
-            </strong>
-            <span class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-              Itens com estoque crítico identificados
-            </span>
-          </article>
+          @if (loading()) {
+            <section class="border border-[var(--outline)] bg-[var(--surface-low)] px-5 py-4">
+              <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                CARREGANDO INSUMOS
+              </span>
+            </section>
+          } @else if (errorMessage()) {
+            <section class="mb-5 border border-[rgb(255_157_136_/_0.55)] bg-[var(--surface-low)] px-5 py-4">
+              <span class="font-[var(--font-mono)] text-[12px] uppercase tracking-[0.14em] text-[var(--danger)]">
+                {{ errorMessage() }}
+              </span>
+            </section>
+          }
 
-          <article class="border-b border-[var(--outline-strong)] bg-[var(--surface-low)] px-6 py-6">
-            <h2 class="metric-title">Giro de estoque</h2>
-            <strong class="mt-6 block font-[var(--font-mono)] text-[24px] font-bold text-[var(--text)]">
-              {{ stockTurnoverRate() | number: '1.0-1' }}%
-            </strong>
-            <div class="mt-4 h-[5px] bg-[rgba(255,255,255,0.12)]">
-              <span class="block h-full bg-[var(--primary)]" [style.width.%]="stockTurnoverRate()"></span>
+          <section class="overflow-hidden border border-[var(--outline)] bg-[var(--surface-low)]">
+            <div class="hidden grid-cols-[1fr_1.7fr_1.3fr_1fr_1fr_1fr_1.2fr_90px] gap-4 bg-[rgba(255,255,255,0.06)] px-5 py-4 md:grid">
+              <span class="table-head">Código</span>
+              <span class="table-head">Nome</span>
+              <span class="table-head">Categoria</span>
+              <span class="table-head text-center">Estoque atual</span>
+              <span class="table-head text-center">Mínimo</span>
+              <span class="table-head text-center">Máximo</span>
+              <span class="table-head">Status</span>
+              <span class="table-head text-right">Ações</span>
             </div>
-          </article>
 
-          <article class="border-b border-[var(--outline-strong)] bg-[var(--surface-low)] px-6 py-6">
-            <h2 class="metric-title">Última atualização</h2>
-            <strong class="mt-6 block font-[var(--font-mono)] text-[16px] font-bold text-[var(--text)]">
-              {{ syncTime() }}
-            </strong>
-            <span class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-              Sincronizado com backend local
-            </span>
-          </article>
-        </section>
+            <div>
+              @for (insumo of paginatedInsumos(); track insumo.id) {
+                <div class="grid gap-3 border-t border-[rgba(255,255,255,0.04)] px-5 py-4 md:grid-cols-[1fr_1.7fr_1.3fr_1fr_1fr_1fr_1.2fr_90px] md:items-center md:gap-4">
+                  <span class="font-[var(--font-mono)] text-[12px] font-bold text-[var(--danger)]">
+                    {{ insumo.codigo }}
+                  </span>
+
+                  <div>
+                    <strong class="block font-[var(--font-body)] text-[14px] leading-[1.35] font-bold text-[var(--text)]">
+                      {{ insumo.nome }}
+                    </strong>
+                    @if (insumo.localizacao) {
+                      <span class="mt-1 block font-[var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-[var(--text-dim)]">
+                        {{ insumo.localizacao }}
+                      </span>
+                    }
+                  </div>
+
+                  <span class="font-[var(--font-body)] text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-muted)]">
+                    {{ insumo.categoria.nome }}
+                  </span>
+
+                  <span class="font-[var(--font-mono)] text-[13px] font-bold text-[var(--info)] md:text-center">
+                    {{ insumo.estoqueAtual | number: '1.0-2' }} {{ insumo.unidadeMedida }}
+                  </span>
+
+                  <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
+                    {{ insumo.estoqueMinimo | number: '1.0-2' }} {{ insumo.unidadeMedida }}
+                  </span>
+
+                  <span class="font-[var(--font-mono)] text-[12px] text-[var(--text-muted)] md:text-center">
+                    @if (insumo.estoqueMaximo !== undefined && insumo.estoqueMaximo !== null) {
+                      {{ insumo.estoqueMaximo | number: '1.0-2' }} {{ insumo.unidadeMedida }}
+                    } @else {
+                      -
+                    }
+                  </span>
+
+                  <span
+                    class="inline-flex min-h-[28px] items-center px-3 font-[var(--font-body)] text-[10px] font-black uppercase"
+                    [ngClass]="getStatusClass(insumo)"
+                  >
+                    {{ getStatusLabel(insumo) }}
+                  </span>
+
+                  <button
+                    *ngIf="canManageInsumos()"
+                    type="button"
+                    (click)="deleteInsumo(insumo)"
+                    class="h-[32px] border border-[var(--outline-strong)] px-3 text-right font-[var(--font-body)] text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)] transition hover:border-[var(--danger)] hover:text-[var(--danger)] disabled:opacity-60"
+                    [disabled]="deletingId() === insumo.id"
+                  >
+                    {{ deletingId() === insumo.id ? '...' : 'Apagar' }}
+                  </button>
+                  <span *ngIf="!canManageInsumos()" class="text-[10px] text-[var(--text-muted)] uppercase">🔒 R/O</span>
+                </div>
+              } @empty {
+                <div class="px-5 py-8 font-[var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                  Nenhum insumo encontrado.
+                </div>
+              }
+            </div>
+
+            <footer class="flex flex-col gap-3 bg-[rgba(255,255,255,0.05)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <span class="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                Página {{ page() | number: '2.0-0' }} / {{ totalPages() | number: '2.0-0' }}
+              </span>
+              <div class="flex gap-2">
+                <button class="pager-button" type="button" (click)="previousPage()" [disabled]="page() === 1">‹</button>
+                <button class="pager-button" type="button" (click)="nextPage()" [disabled]="page() === totalPages()">›</button>
+              </div>
+            </footer>
+          </section>
+
+          <!-- MÉTRICAS -->
+          <section class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <article class="border-l-[3px] border-[var(--danger)] bg-[var(--surface-low)] px-6 py-6">
+              <h2 class="metric-title">Alertas de reposição</h2>
+              <strong class="mt-6 block font-[var(--font-mono)] text-[24px] font-bold text-[var(--text)]">
+                {{ criticalCount() | number: '1.0-0' }}
+              </strong>
+              <span class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                Itens com estoque crítico identificados
+              </span>
+            </article>
+
+            <article class="border-b border-[var(--outline-strong)] bg-[var(--surface-low)] px-6 py-6">
+              <h2 class="metric-title">Giro de estoque</h2>
+              <strong class="mt-6 block font-[var(--font-mono)] text-[24px] font-bold text-[var(--text)]">
+                {{ stockTurnoverRate() | number: '1.0-1' }}%
+              </strong>
+              <div class="mt-4 h-[5px] bg-[rgba(255,255,255,0.12)]">
+                <span class="block h-full bg-[var(--primary)]" [style.width.%]="stockTurnoverRate()"></span>
+              </div>
+            </article>
+
+            <article class="border-b border-[var(--outline-strong)] bg-[var(--surface-low)] px-6 py-6">
+              <h2 class="metric-title">Última atualização</h2>
+              <strong class="mt-6 block font-[var(--font-mono)] text-[16px] font-bold text-[var(--text)]">
+                {{ syncTime() }}
+              </strong>
+              <span class="mt-3 block font-[var(--font-mono)] text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                Sincronizado com backend local
+              </span>
+            </article>
+          </section>
+        </ng-container>
       </div>
     </main>
   </div>

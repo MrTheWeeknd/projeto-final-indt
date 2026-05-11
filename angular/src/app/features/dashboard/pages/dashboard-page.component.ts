@@ -108,6 +108,19 @@ export class DashboardPageComponent {
     void this.router.navigateByUrl('/categorias');
   }
 
+  protected isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  protected hasDashboardPermission(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.permissoes?.dashboard !== false;
+  }
+
+  protected goToAdmin(): void {
+    void this.router.navigateByUrl('/admin');
+  }
+
   protected reload(): void {
     this.loadDashboard();
   }

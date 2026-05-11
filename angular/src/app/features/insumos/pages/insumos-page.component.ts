@@ -6,6 +6,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
+import { PermissionsService } from '../../../core/auth/permissions.service';
 import { Categoria, CreateInsumoPayload, Insumo, InsumosService } from '../data/insumos.service';
 
 type StatusFiltro = 'todos' | 'normal' | 'baixo' | 'zerado' | 'acima';
@@ -21,6 +22,7 @@ type StatusInsumo = Exclude<StatusFiltro, 'todos'>;
 export class InsumosPageComponent {
   private readonly insumosService = inject(InsumosService);
   private readonly authService = inject(AuthService);
+  private readonly permissionsService = inject(PermissionsService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
@@ -83,11 +85,18 @@ export class InsumosPageComponent {
   });
 
   protected readonly activeCategoriesCount = computed(
-    () => new Set(this.insumos().filter((insumo) => insumo.ativo).map((insumo) => insumo.categoria.id)).size,
+    () =>
+      new Set(
+        this.insumos()
+          .filter((insumo) => insumo.ativo)
+          .map((insumo) => insumo.categoria.id),
+      ).size,
   );
 
   protected readonly criticalCount = computed(
-    () => this.insumos().filter((insumo) => insumo.ativo && insumo.estoqueAtual <= insumo.estoqueMinimo).length,
+    () =>
+      this.insumos().filter((insumo) => insumo.ativo && insumo.estoqueAtual <= insumo.estoqueMinimo)
+        .length,
   );
 
   protected readonly stockTurnoverRate = computed(() => {
@@ -109,6 +118,10 @@ export class InsumosPageComponent {
 
   protected get userEmail(): string {
     return this.authService.getSession()?.usuario.email ?? 'operador@blackbox.tec';
+  }
+
+  protected canManageInsumos(): boolean {
+    return this.permissionsService.canEditInsumo();
   }
 
   protected updateSearchTerm(term: string): void {
@@ -144,6 +157,21 @@ export class InsumosPageComponent {
 
   protected goToCategorias(): void {
     void this.router.navigateByUrl('/categorias');
+  }
+
+  // Adicione isso no seu insumos-page.component.ts
+  protected isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  protected hasInsumosPermission(): boolean {
+    const user = this.authService.getCurrentUser();
+    // Retorna true por padrão (se não tiver a coluna setada), senao retorna o valor salvo.
+    return user?.permissoes?.insumos !== false;
+  }
+
+  protected goToAdmin(): void {
+    void this.router.navigateByUrl('/admin');
   }
 
   protected toggleCreateForm(): void {
@@ -188,7 +216,9 @@ export class InsumosPageComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (insumo) => {
-          this.insumos.update((items) => [...items, insumo].sort((a, b) => a.nome.localeCompare(b.nome)));
+          this.insumos.update((items) =>
+            [...items, insumo].sort((a, b) => a.nome.localeCompare(b.nome)),
+          );
           this.insumoForm.reset({
             codigo: '',
             nome: '',

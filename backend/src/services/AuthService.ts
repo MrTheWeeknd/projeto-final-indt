@@ -48,6 +48,7 @@ class AuthService {
       {
         sub: String(usuario.id),
         email: usuario.email,
+        role: usuario.role,
       },
       this.tokenSecret,
       this.tokenExpiration,

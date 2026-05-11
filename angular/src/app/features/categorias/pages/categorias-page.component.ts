@@ -6,6 +6,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
+import { PermissionsService } from '../../../core/auth/permissions.service';
 import { Insumo, InsumosService } from '../../insumos/data/insumos.service';
 import { Categoria, CategoriasService, CategoriaPayload } from '../data/categorias.service';
 
@@ -20,6 +21,7 @@ export class CategoriasPageComponent {
   private readonly categoriasService = inject(CategoriasService);
   private readonly insumosService = inject(InsumosService);
   private readonly authService = inject(AuthService);
+  private readonly permissionsService = inject(PermissionsService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
@@ -100,6 +102,10 @@ export class CategoriasPageComponent {
     return this.editingId() !== null;
   }
 
+  protected canManageCategories(): boolean {
+    return this.permissionsService.canEditCategoria();
+  }
+
   protected updateSearchTerm(term: string): void {
     this.searchTerm.set(term);
     this.page.set(1);
@@ -148,7 +154,9 @@ export class CategoriasPageComponent {
           return nextCategorias.sort((a, b) => a.nome.localeCompare(b.nome));
         });
         this.clearForm();
-        this.formMessage.set(editingId === null ? 'Categoria cadastrada.' : 'Categoria atualizada.');
+        this.formMessage.set(
+          editingId === null ? 'Categoria cadastrada.' : 'Categoria atualizada.',
+        );
         this.syncTime.set(new Date());
         this.saving.set(false);
       },
@@ -186,7 +194,9 @@ export class CategoriasPageComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.categorias.update((categorias) => categorias.filter((item) => item.id !== categoria.id));
+          this.categorias.update((categorias) =>
+            categorias.filter((item) => item.id !== categoria.id),
+          );
           this.syncTime.set(new Date());
           this.deletingId.set(null);
         },
@@ -248,6 +258,22 @@ export class CategoriasPageComponent {
 
   protected goToMovimentacoes(): void {
     void this.router.navigateByUrl('/movimentacoes');
+  }
+
+  // Adicione isso no seu categorias-page.component.ts
+  protected isAdmin(): boolean {
+    // Acesse o authService (ajuste 'this.authService' para o nome que você usou na injeção)
+    return this.authService.isAdmin();
+  }
+
+  protected hasCategoriasPermission(): boolean {
+    const user = this.authService.getCurrentUser();
+    // Por padrão (se undefined), retorna true para não quebrar usuários antigos
+    return user?.permissoes?.categorias !== false;
+  }
+
+  protected goToAdmin(): void {
+    void this.router.navigateByUrl('/admin');
   }
 
   protected reload(): void {

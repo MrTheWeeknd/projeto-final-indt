@@ -12,6 +12,21 @@ export class Usuario {
     @Column({ type: "varchar", nullable: false })
     senha: string;
 
+    @Column({ type: "varchar", nullable: false, default: "user" })
+    role: "admin" | "user";
+
+    @Column({ 
+        type: "jsonb", 
+        nullable: false, 
+        default: { dashboard: true, insumos: true, categorias: true, movimentacoes: true } 
+    })
+    permissoes: {
+        dashboard: boolean;
+        insumos: boolean;
+        categorias: boolean;
+        movimentacoes: boolean;
+    };
+
     @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.usuario)
     movimentacoes: Movimentacao[];
 }

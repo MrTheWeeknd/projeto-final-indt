@@ -9,8 +9,16 @@ export type AuthSession = {
   usuario: {
     id: number;
     email: string;
+    role: 'admin' | 'user';
+    permissoes?: {
+      dashboard: boolean;
+      insumos: boolean;
+      categorias: boolean;
+      movimentacoes: boolean;
+    };
   };
 };
+
 
 type LoginPayload = {
   email: string;
@@ -77,6 +85,57 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    const session = this.getSession();
+    return session?.usuario.role === 'admin';
+  }
+
+  getCurrentUser() {
+    return this.getSession()?.usuario ?? null;
+  }
+
+  // Verificações de permissão por feature
+  canAccessCategorias(): boolean {
+    return this.isAuthenticated();
+  }
+
+  canEditCategorias(): boolean {
+    return this.isAdmin();
+  }
+
+  canAccessInsumos(): boolean {
+    return this.isAuthenticated();
+  }
+
+  canEditInsumos(): boolean {
+    return this.isAdmin();
+  }
+
+  canCreateMovimentacao(): boolean {
+    return this.isAuthenticated();
+  }
+
+  canEditMovimentacao(): boolean {
+    return this.isAdmin();
+  }
+
+  canViewMovimentacao(usuarioId: number): boolean {
+    // Admin vê tudo, usuário comum vê apenas suas próprias movimentações
+    const currentUser = this.getCurrentUser();
+    return this.isAdmin() || currentUser?.id === usuarioId;
+  }
+
+  canAccessDashboard(): boolean {
+    return this.isAuthenticated();
+  }
+
+  canAccessProfile(userId?: number): boolean {
+    if (!this.isAuthenticated()) return false;
+    const currentUser = this.getCurrentUser();
+    // Admin acessa tudo, usuário comum só acessa seu próprio perfil
+    return this.isAdmin() || currentUser?.id === userId;
   }
 
   private saveSession(session: AuthSession): void {
