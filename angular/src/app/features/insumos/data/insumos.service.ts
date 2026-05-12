@@ -38,7 +38,7 @@ export type CreateInsumoPayload = {
 @Injectable({ providedIn: 'root' })
 export class InsumosService {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:6060/api';
+  private readonly apiBaseUrl = 'https://projeto-final-indt-production.up.railway.app/api';
 
   listInsumos(): Observable<Insumo[]> {
     return this.http.get<Insumo[]>(`${this.apiBaseUrl}/insumos`);

@@ -12,7 +12,7 @@ export interface User {
   providedIn: 'root',
 })
 export class UserManagementService {
-  private apiUrl = 'http://localhost:6060/api/usuarios';
+  private apiUrl = 'https://projeto-final-indt-production.up.railway.app/api/usuarios';
 
   constructor(private http: HttpClient) {}
 

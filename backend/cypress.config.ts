@@ -2,7 +2,7 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
-    baseUrl: "http://localhost:6060/api",
+    baseUrl: "https://projeto-final-indt-production.up.railway.app/api",
     video: false,
     screenshotOnRunFailure: false,
     supportFile: false,

@@ -30,7 +30,7 @@ export type DashboardResponse = {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:6060/api';
+  private readonly apiBaseUrl = 'https://projeto-final-indt-production.up.railway.app/api';
 
   getDashboard(): Observable<DashboardResponse> {
     return this.http.get<DashboardResponse>(`${this.apiBaseUrl}/dashboard`);

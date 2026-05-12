@@ -16,7 +16,7 @@ export type CategoriaPayload = {
 @Injectable({ providedIn: 'root' })
 export class CategoriasService {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:6060/api';
+  private readonly apiBaseUrl = 'https://projeto-final-indt-production.up.railway.app/api';
 
   listCategorias(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(`${this.apiBaseUrl}/categorias`);

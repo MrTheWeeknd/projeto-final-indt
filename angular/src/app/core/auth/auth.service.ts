@@ -40,7 +40,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly storageKey = 'blackbox.session';
-  private readonly apiBaseUrl = 'http://localhost:6060/api';
+  private readonly apiBaseUrl = 'https://projeto-final-indt-production.up.railway.app/api';
 
   login(payload: LoginPayload): Observable<AuthSession> {
     return this.http

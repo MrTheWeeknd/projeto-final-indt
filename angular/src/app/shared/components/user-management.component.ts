@@ -459,7 +459,7 @@ export class UserManagementComponent implements OnInit {
     this.savingPermissions = true;
     this.cdr.detectChanges(); // Garante que o botão muda visualmente para "SALVANDO..."
 
-    const apiUrl = `http://localhost:6060/api/usuarios/${this.editingUser.id}/permissoes`;
+    const apiUrl = `https://projeto-final-indt-production.up.railway.app/api/usuarios/${this.editingUser.id}/permissoes`;
 
     // Dispara a requisição de forma independente contornando o UserManagementService para evitar quebras silenciosas
     this.http.patch(apiUrl, { permissoes: this.userPermissions }).subscribe({

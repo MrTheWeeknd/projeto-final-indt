@@ -37,7 +37,7 @@ export type CreateMovimentacaoPayload = {
 @Injectable({ providedIn: 'root' })
 export class MovimentacoesService {
   private readonly http = inject(HttpClient);
-  private readonly apiBaseUrl = 'http://localhost:6060/api';
+  private readonly apiBaseUrl = 'https://projeto-final-indt-production.up.railway.app/api';
 
   listMovimentacoes(): Observable<Movimentacao[]> {
     return this.http.get<Movimentacao[]>(`${this.apiBaseUrl}/movimentacoes`);
